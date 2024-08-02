@@ -5,4 +5,3 @@
 * Juan Diego Jiménez - 2019199111
 * Alex Naranjo - 2023063599
 
-Prueba 2
