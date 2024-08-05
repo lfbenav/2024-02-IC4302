@@ -6,6 +6,7 @@ from datetime import datetime
 import json
 import hashlib
 import json
+import boto3
 
 
 hostname = os.getenv('HOSTNAME')

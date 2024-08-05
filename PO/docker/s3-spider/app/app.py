@@ -7,7 +7,7 @@ DATA=os.getenv('DATAFROMK8S')
 RABBIT_MQ=os.getenv('RABBITMQ')
 RABBIT_MQ_PASSWORD=os.getenv('RABBITMQ_PASS')
 QUEUE_NAME=os.getenv('RABBITMQ_QUEUE')
-
+print(DATA)
 
 hostname = os.getenv('HOSTNAME')
 
