@@ -1,0 +1,4 @@
+pika
+pymysql
+requests
+python-dotenv
