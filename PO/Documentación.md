@@ -209,7 +209,8 @@ En la siguiente imagen, está el resultado de las pruebas unitarias del s3-spide
 
  ![alt text](./images/image.png "alt text")
 
- En el caso del downloader, se intentó hacer un unit test pero había un elemento de la función de procesar mensajes que no se podía imitar utilizando las librerías mencionadas anteriormente. Sin embargo al ejecutar el proyecto, en los pods logs aparece que se estan esperando mensajes por lo que se garantizá que esta funcionando correctamente.
+ En el caso del downloader, se intentó hacer un unit test pero había un elemento de la función de procesar mensajes que no se podía imitar utilizando las librerías mencionadas anteriormente. Al intentar hacer el unit test da el siguiente error: pika.exceptions.AMQPConnectionError, esta excepción es de la librería de Pika, la cual se esta utilizando para interactuar con RabbitMQ. Esta excepción indica que ocurrió un error al intentar establecer la conexión con el servidor. Pese a que se intentó sustituir el servicio temporalmente usando ``` @patch('pika.BlockingConnection') ```, el error seguía apareciendo.
+ Sin embargo al ejecutar el proyecto, en los pods logs aparece que se estan esperando mensajes por lo que se garantizá que esta funcionando correctamente.  
  Para el spark-job no se hicieron pruebas unitarias como tal ya que es un archivo .scala. 
 
 

@@ -1,2 +1,5 @@
 pika
-mariadb
+pymysql
+requests
+python-dotenv
+moto
