@@ -71,13 +71,4 @@ spec:
                 name: databases-mariadb
                 key: mariadb-root-password
                 optional: false
-          - name: ELASTIC_USER
-            value: "elastic"
-          - name: ELASTIC_PASS
-            valueFrom:
-              secretKeyRef:
-                name: ic4302-es-elastic-user
-                key: elastic
-                optional: false
-          - name: ELASTIC
-            value: "ic4302-es-http"
+          

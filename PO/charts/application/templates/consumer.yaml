@@ -61,3 +61,4 @@ spec:
                 name: databases-mariadb
                 key: mariadb-root-password
                 optional: false
+          

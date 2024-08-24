@@ -5,3 +5,4 @@
 * Juan Diego Jiménez - 2019199111
 * Alex Naranjo - 2023063599
 
+Pruebas unitarias, documentación, imágenes y recursos del proyecto dentro de la carpeta PO.
