@@ -257,7 +257,7 @@ class TestS3Functions(unittest.TestCase):
 
 if __name__ == "__main__":
     # Ejecutar los unit tests
-    unittest.main()
+    # unittest.main()
     
     # Listar objetos en el bucket S3 especificado
     objects = list_s3_objects(BUCKET, ACCESS_KEY, SECRET_KEY)
