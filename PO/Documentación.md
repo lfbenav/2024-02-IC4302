@@ -32,6 +32,8 @@ cd ./PO/docker
 ./build.sh user
 ```
 
+**Nota:** Si desea correr los UnitTests, es necesario descomentar la linea 260 en **PO > docker > s3-spider > app > app.py**.
+
 ### 4. Configurar y hacer el install
 
 Antes de comenzar con el install es necesario modificar el usuario de DockerHub
