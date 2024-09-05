@@ -1,12 +1,55 @@
 mongodb:
-  enabled: false
+  enabled: true
   metrics:
     enabled: true
     serviceMonitor:
       enabled: true
       namespace: "monitoring"
+
 mariadb:
-  enabled: false
+  env:
+  - name: MARIADB_USER
+    value: "root"
+  - name: MARIADB
+    value: "databases-mariadb"
+  - name: MARIADB_DB
+    value: "movielens"
+  - name: MARIADB_PASS
+    valueFrom:
+      secretKeyRef:
+        name: databases-mariadb
+        key: mariadb-root-password
+        optional: false
+  enabled: true
+  initdbScripts:
+    init.sql: |
+      CREATE DATABASE movielens;
+      USE movielens;
+      CREATE TABLE movies (
+          movie_id INT PRIMARY KEY,
+          title VARCHAR(255),
+          release_date DATE,
+          video_release_date DATE,
+          imdb_url VARCHAR(255),
+          genre_flags VARCHAR(255)
+      );
+      CREATE TABLE ratings (
+          userId INT,
+          movieId INT,
+          rating FLOAT,
+          timestamp BIGINT,
+          PRIMARY KEY (userId, movieId)
+      );
+      CREATE TABLE tags (
+          userId INT,
+          movieId INT,
+          tag VARCHAR(255),
+          timestamp BIGINT
+      );
+      INSERT INTO movies (movie_id, title, release_date, video_release_date, imdb_url, genre_flags)
+      VALUES 
+      (1, 'The Matrix', '1999-03-31', '1999-06-07', 'https://www.imdb.com/title/tt0133093/', 'Action, Sci-Fi'),
+      (2, 'Inception', '2010-07-16', '2010-11-09', 'https://www.imdb.com/title/tt1375666/', 'Action, Adventure, Sci-Fi');
   metrics:
     enabled: true
     serviceMonitor:

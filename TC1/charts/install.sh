@@ -7,7 +7,6 @@ cd ..
 helm upgrade --install bootstrap bootstrap
 sleep 20
 
-
 cd monitoring-stack
 rm -rf Chart.lock
 rm -rf charts

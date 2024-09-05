@@ -1,1 +1,7 @@
-flask 
+flask
+pymysql
+psycopg2
+elasticsearch
+redis
+prometheus_client
+mariadb

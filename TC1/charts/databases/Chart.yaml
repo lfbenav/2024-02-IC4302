@@ -32,4 +32,9 @@ dependencies:
     version: "7.4.11"
     repository: https://charts.bitnami.com/bitnami
     condition: memcached.enabled
+  - name: mariadb
+    version: "19.0.4"
+    repository: https://charts.bitnami.com/bitnami
+    condition: mariadb.enabled
+
 
