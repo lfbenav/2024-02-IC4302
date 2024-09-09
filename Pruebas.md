@@ -1,5 +1,7 @@
 # Pruebas y Resultados
 
+Las pruebas se realizaron utilizando Gatling. Para la ejecución de las mismas se descargó una **demo** en la página oficial. Esta demo maneja los paquetes utilizando maven. Además, el dataset que se utilizó es de películas y sus ratings.
+
 ## MariaDB
 
 ### Primera prueba:
@@ -37,8 +39,13 @@ public class MariaDBLoadTest extends Simulation {
 }
 ```
 ### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+Empieza en 15:15
+Los cortes que se ven en los gráficos es porque el pod de MariaDB estaba inestable.
+![1MariaDB1](images/1MariaDB1.png)
+![1MariaDB2](images/1MariaDB2.png)
+![1MariaDB3](images/1MariaDB3.png)
+![1MariaDB4](images/1MariaDB4.png)
+![1MariaDB5](images/1MariaDB5.png)
 
 ---
 
@@ -77,9 +84,10 @@ public class MariaDBLoadTestWithRedis extends Simulation {
     }
 }
 ```
-### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+### Resultados de la Segunda prueba:
+Empieza en 16:35
+![2MariaDB](images/2MariaDB1.png) ![2MariaDB](images/2MariaDB2.png) ![2MariaDB](images/2MariaDB3.png) ![2MariaDB](images/2MariaDB4.png) ![2MariaDB](images/2MariaDB5.png) ![2MariaDB](images/2MariaDB6.png) ![2MariaDB](images/2MariaDB7redis.png) ![2MariaDB](images/2MariaDB8redis.png)
+Para esta prueba se incluyeron los gráficos de redis. Se puede ver que la cantidad de queries disminuyo con respecto a la primera prueba.
 
 ---
 
@@ -118,9 +126,10 @@ public class MariaDBLoadTestWithMemcached extends Simulation {
     }
 }
 ```
-### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+### Resultados de la Tercera prueba:
+Empieza en 17:05
+![3MariaDB](images/3MariaDB1.png) ![3MariaDB](images/3MariaDB2.png) ![3MariaDB](images/3MariaDB3.png) ![3MariaDB](images/3MariaDB4.png) ![3MariaDB](images/3MariaDB5.png) ![3MariaDB](images/3MariaDB6.png) ![3MariaDB](images/3MariaDB7memcached.png)  
+Para esta prueba se incluyeron los gráficos de memcached. Se puede ver que la cantidad de queries disminuyo con respecto a la primera prueba.
 
 ---
 
@@ -151,15 +160,17 @@ public class MariaDBLoadTest2 extends Simulation {
         // Simulación de usuarios concurrentes
         setUp(
                 scn.injectOpen(
-                        constantUsersPerSec(5).during(Duration.ofSeconds(900)) // 10 usuarios por segundo durante 15 minutos
+                        constantUsersPerSec(5).during(Duration.ofSeconds(900)) // 5 usuarios por segundo durante 15 minutos
                 ).protocols(httpProtocol)
         );
     }
 }
 ```
-### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+### Resultados de la Cuarta prueba:  
+Empieza en 21:06  
+
+![4MariaDB](images/4MariaDB1.png) ![4MariaDB](images/4MariaDB2.png) ![4MariaDB](images/4MariaDB3.png) ![4MariaDB](images/4MariaDB4.png) ![4MariaDB](images/4MariaDB5.png)  
+Esta prueba se realiza haciendo la conexión con tres endpoints y con la mitad de usuarios por segundo(5)
 
 ---
 
@@ -192,9 +203,11 @@ public class MariaDBLoadTest3 extends Simulation {
     }
 }
 ```
-### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+### Resultados de la Quinta prueba:
+Empieza en 21:30
+![5MariaDB](images/5MariaDB1.png) ![5MariaDB](images/5MariaDB2.png) ![5MariaDB](images/5MariaDB3.png) ![5MariaDB](images/5MariaDB4.png) ![5MariaDB](images/5MariaDB5.png) ![5MariaDB](images/5MariaDB6.png)  
+
+Esta prueba se realiza haciendo la conexión con solo un endpoint específico y simulando un total de 20 usuarios concurrentes.
 
 ---
 
@@ -235,8 +248,8 @@ public class postgresqlLoadTest extends Simulation {
 }
 ```
 ### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+Empieza en 17:45
+![1Postgres](images/1Postgres1.png) ![1Postgres](images/1Postgres2.png) ![1Postgres](images/1Postgres3.png) ![1Postgres](images/1Postgres4.png)
 
 ---
 
@@ -275,9 +288,10 @@ public class postgresqlLoadTestWithRedis extends Simulation {
     }
 }
 ```
-### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+### Resultados de la Segunda prueba:
+Empieza en 18:05
+![2Postgres](images/2Postgres1.png) ![2Postgres](images/2Postgres2.png) ![2Postgres](images/2Postgres3.png) ![2Postgres](images/2Postgres4.png) ![2Postgres](images/2Postgres5redis.png) ![2Postgres](images/2Postgres6redis.png)  
+Se incluyen los gráficos de redis
 
 ---
 
@@ -316,9 +330,10 @@ public class postgresqlLoadTestWithMemcached extends Simulation {
     }
 }
 ```
-### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+### Resultados de la Tercera prueba:
+Empieza en 18:29
+![3Postgres](images/3Postgres1.png) ![3Postgres](images/3Postgres2.png) ![3Postgres](images/3Postgres3.png) ![3Postgres](images/3Postgres4.png) ![3Postgres](images/3Postgres5memcached.png) ![3Postgres](images/3Postgres6memcached.png)  
+Se incluyen los gráficos de redis
 
 ---
 
@@ -355,9 +370,11 @@ public class postgresqlLoadTest2 extends Simulation {
     }
 }
 ```
-### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+### Resultados de la Cuarta prueba:
+Empieza en 18:50
+![4Postgres](images/4Postgres1.png) ![4Postgres](images/4Postgres2.png) ![4Postgres](images/4Postgres3.png) ![4Postgres](images/4Postgres4.png)  
+
+Esta prueba se realiza haciendo la conexión con tres endpoints y con la mitad de usuarios por segundo(5)
 
 ---
 
@@ -391,8 +408,10 @@ public class postgresqlLoadTest3 extends Simulation {
 }
 ```
 ### Resultados de la Primera prueba:
-Empieza en XXXX
-AAA
+Empieza en 19:10
+ ![5Postgres](images/5Postgres1.png) ![5Postgres](images/5Postgres2.png) ![5Postgres](images/5Postgres3.png) ![5Postgres](images/5Postgres4.png)
+
+Esta prueba se realiza haciendo la conexión con solo un endpoint específico y simulando un total de 20 usuarios concurrentes.
 
 ---
 
