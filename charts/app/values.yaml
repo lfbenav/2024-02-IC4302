@@ -1,0 +1,41 @@
+config:
+  flask:
+    enabled: true
+    name: flasktest
+    replicas: 10
+    image: wisfer/flask-example      
+    env:
+      - name: variable_test
+        value: "hola"
+      - name: maria_host
+        value: "databases-mariadb"
+      - name: maria_user
+        value: "movieLensUser"
+      - name: maria_password
+        value: "1234"
+      - name: maria_database
+        value: "movielens"
+      - name: postgre_host
+        value: "databases-postgresql"
+      - name: postgre_user
+        value: "movieLensUser"
+      - name: postgre_password
+        value: "1234"
+      - name: postgre_dbname
+        value: "movielens"
+      - name: es_pass
+        value: "1234"
+      - name: es_host
+        value: "ic4302-es-http"
+      - name: es_port
+        value: "9200"
+      - name: es_usuario
+        value: "elastic"
+      - name: redis_host
+        value: "databases-redis"
+      - name: redis_port
+        value: "6379"
+      - name: memcached_host
+        value: "databases-memcached"
+      - name: memcached_port
+        value: "11211"

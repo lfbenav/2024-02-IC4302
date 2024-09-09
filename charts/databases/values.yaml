@@ -1,0 +1,113 @@
+mongodb:
+  enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: "monitoring"
+
+mariadb:
+  enabled: true
+  auth:
+    rootPassword: "1234"
+    database: "movielens"
+    username: "movieLensUser"
+    password: "1234"
+  initdbScripts:
+    init.sql: |
+      CREATE DATABASE movielens;
+      USE movielens;
+      CREATE TABLE movies (
+          movieId INT PRIMARY KEY,
+          title VARCHAR(255),
+          genres VARCHAR(255)
+      );
+      CREATE TABLE ratings (
+          userId INT,
+          movieId INT,
+          rating FLOAT,
+          timestamp BIGINT,
+          PRIMARY KEY (userId, movieId)
+      );
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: "monitoring"
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "1234"
+    password: "1234"
+    database: "movielens"
+    username: "movieLensUser"
+  primary:
+    initdb:
+      scripts:
+        init.sql: |
+          GRANT ALL PRIVILEGES ON DATABASE movielens TO movieLensUser;
+          CREATE TABLE movies (
+              movieId INT PRIMARY KEY,
+              title VARCHAR(255),
+              genres VARCHAR(255)
+          );
+          
+          CREATE TABLE ratings (
+              userId INT,
+              movieId INT REFERENCES movies(movieId),
+              rating FLOAT,
+              timestamp BIGINT,
+              PRIMARY KEY (userId, movieId)
+          );
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: "monitoring"
+
+elasticsearch:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: "monitoring"
+elastic:
+  enabled: true
+  version: 8.6.1
+  replicas: 1
+  name: ic4302
+kibana:
+  enabled: true
+  version: 8.6.1
+  replicas: 1
+  name: ic4302
+prometheus-elasticsearch-exporter:
+  env:
+    ES_USERNAME: elastic
+  extraEnvSecrets:
+    ES_PASSWORD:
+      secret: ic4302-es-elastic-user
+      key: elastic
+  es:
+    uri: http://ic4302-es-http:9200
+    cluster_settings: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+
+redis:
+  enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: "monitoring"
+
+memcached:
+  enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: "monitoring"

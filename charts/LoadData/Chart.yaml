@@ -1,0 +1,4 @@
+apiVersion: v2
+name: load-data
+description: A Helm chart to load data into MariaDB from CSV files
+version: 0.1.0

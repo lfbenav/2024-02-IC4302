@@ -1,0 +1,18 @@
+dependencies:
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 19.6.4
+- name: memcached
+  repository: https://charts.bitnami.com/bitnami
+  version: 7.4.11
+- name: mariadb
+  repository: https://charts.bitnami.com/bitnami
+  version: 19.0.4
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 15.5.27
+- name: elasticsearch
+  repository: https://charts.bitnami.com/bitnami
+  version: 21.3.12
+digest: sha256:db2e76aec8fe5ee85a523f61189a10b585b8c9c0cb6404e4f3e3ee22f6cf3d46
+generated: "2024-09-08T15:30:25.9467013-06:00"

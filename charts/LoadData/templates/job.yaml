@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: load-data
+  template:
+    metadata:
+      labels:
+        app: load-data
+    spec:
+      containers:
+        - name: load-data
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          env:
+            - name: maria_host
+              value: "databases-mariadb"
+            - name: maria_user
+              value: "movieLensUser"
+            - name: maria_password
+              value: "1234"
+            - name: maria_database
+              value: "movielens"
+            - name: postgre_host
+              value: "databases-postgresql"
+            - name: postgre_user
+              value: "movieLensUser"
+            - name: postgre_password
+              value: "1234"
+            - name: postgre_dbname
+              value: "movielens"
+          command: ["python", "load_data.py"]

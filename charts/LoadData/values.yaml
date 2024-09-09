@@ -1,0 +1,35 @@
+image:
+  repository: wisfer/load-data
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+
+podAnnotations: {}
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env:
+  - name: maria_host
+    value: "databases-mariadb"
+  - name: maria_user
+    value: "movieLensUser"
+  - name: maria_password
+    value: "1234"
+  - name: maria_database
+    value: "movielens"
+  - name: postgre_host
+    value: "databases-postgresql"
+  - name: postgre_user
+    value: "movieLensUser"
+  - name: postgre_password
+    value: "1234"
+  - name: postgre_dbname
+    value: "movielens"
