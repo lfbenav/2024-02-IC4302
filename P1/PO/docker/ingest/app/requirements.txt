@@ -1,0 +1,7 @@
+boto3
+pymysql
+pika
+requests
+elasticsearch
+pandas
+langdetect
