@@ -10,6 +10,18 @@ kibana:
   name: ic4302
 mariadb:
   enabled: true
+  initdbScripts:
+    init.sql: |
+      CREATE DATABASE SEMANTIFY;
+      USE SEMANTIFY;
+      CREATE TABLE processed_files (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          filename VARCHAR(255),
+          processed BOOLEAN DEFAULT 0
+      );
+      CREATE TABLE processed_songs (
+          id VARCHAR(255) PRIMARY KEY,
+      );
 rabbitmq:
   enabled: true
   # Keep this line if you are using Mac OS
