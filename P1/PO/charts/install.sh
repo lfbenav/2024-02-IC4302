@@ -12,3 +12,5 @@ cd ..
 helm upgrade --install databases databases
 sleep 60
 helm upgrade --install application application
+sleep 60
+kubectl port-forward svc/flask-api-nodeport 5005:5005

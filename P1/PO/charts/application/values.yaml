@@ -19,3 +19,7 @@ config:
     name: s3crawler
     image: s3crawler
     schedule: "0/5 * * * *"
+  flask:
+    replicas: 2
+    name: flask-api
+    image: flask-api

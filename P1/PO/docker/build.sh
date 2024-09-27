@@ -14,3 +14,8 @@ cd ../spark-job
 
 docker build -t $1/spark-job .
 docker push $1/spark-job
+
+cd ../flask-api
+
+docker build -t $1/flask-api .
+docker push $1/flask-api

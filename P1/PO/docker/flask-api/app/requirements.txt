@@ -1,0 +1,7 @@
+flask
+flask-cors
+elasticsearch
+pymysql
+prometheus_client
+boto3
+requests

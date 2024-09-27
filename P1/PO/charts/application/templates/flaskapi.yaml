@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.config.flask.name }}  # Takes the name from values.yaml
+spec:
+  replicas: {{ .Values.config.flask.replicas }}  # Number of replicas, e.g., 2
+  selector:
+    matchLabels:
+      app: {{ .Values.config.flask.name }}  # Must match the selector used in the service
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.config.flask.name }}  # Ensure this matches in both Deployment and Service
+    spec:
+      containers:
+      - name: {{ .Values.config.flask.name }}
+        image: "{{ .Values.docker_registry }}/{{ .Values.config.flask.image }}"  # Flask image
+        ports:
+        - containerPort: 5005  # Match the port Flask is running on inside the container
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-api-nodeport
+  namespace: default
+spec:
+  ports:
+    - name: flask-api-http  # Cambia el nombre del puerto para hacerlo único
+      protocol: TCP
+      port: 5005  # Mantén el puerto 5005
+      targetPort: 5005  # Mantén el puerto 5005
+  selector:
+    app: flask-api
+  type: NodePort
