@@ -278,3 +278,332 @@ def like():
         return jsonify({"status": "Prompt liked and republished successfully", "updated_likes": updated_likes[0]}), 200
     finally:
         connection.close()
+
+# Solicitudes para la sección ME
+# Ruta para obtener mi usuario
+@app.route("/me/getProfile", methods=["GET"])
+def getProfile():
+    data = request.get_json()
+    username = data.get("username")
+
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT username FROM users WHERE username = %s"
+            cursor.execute(sql, (username))
+            result = cursor.fetchone()
+
+            return jsonify({"results": result}), 200
+    finally:
+        connection.close()
+
+# Ruta para cambiar mi username
+@app.route("/me/updateUsername", methods=["POST"])
+def updateUsername():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password").encode('utf-8')
+    newUsername = data.get("newUsername")
+    encryptedPassword = base64.b64encode(password).decode('utf-8')  # Encripta la contraseña
+
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Desactivar restricciones de clave foránea
+            cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
+            
+            # Verificar si el usuario y la contraseña son correctos
+            sql_check = "SELECT * FROM users WHERE username = %s AND password = %s"
+            cursor.execute(sql_check, (username, encryptedPassword))
+            user = cursor.fetchone()
+
+            if not user:
+                cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")  # Rehabilitar restricciones de clave foránea
+                return jsonify({"error": "Invalid username or password"}), 403
+
+            # Verificar si el nuevo nombre de usuario ya está en uso
+            sql_check_new_username = "SELECT * FROM users WHERE username = %s"
+            cursor.execute(sql_check_new_username, (newUsername,))
+            if cursor.fetchone():
+                cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")  # Rehabilitar restricciones de clave foránea
+                return jsonify({"error": "Username already exists"}), 400
+
+            # Actualizar el username en todas las tablas relevantes
+            sql_users = "UPDATE users SET username = %s WHERE username = %s"
+            sql_prompts = "UPDATE prompts SET username = %s WHERE username = %s"
+            sql_likes = "UPDATE likes SET username = %s WHERE username = %s"
+            sql_follows_follower = "UPDATE follows SET follower_username = %s WHERE follower_username = %s"
+            sql_follows_followee = "UPDATE follows SET followee_username = %s WHERE followee_username = %s"
+
+            cursor.execute(sql_users, (newUsername, username))
+            cursor.execute(sql_prompts, (newUsername, username))
+            cursor.execute(sql_likes, (newUsername, username))
+            cursor.execute(sql_follows_follower, (newUsername, username))
+            cursor.execute(sql_follows_followee, (newUsername, username))
+
+            connection.commit()
+
+            # Rehabilitar restricciones de clave foránea
+            cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
+
+        return jsonify({"status": "Usuario registrado con éxito"}), 200
+    finally:
+        connection.close()
+
+
+
+# Ruta para cambiar mi contraseña
+@app.route("/me/updatePassword", methods=["POST"])
+def updatePassword():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password").encode('utf-8')  # Convertimos a bytes
+    newPassword = data.get("newPassword").encode('utf-8')  # Convertimos a bytes
+    encryptedPassword = base64.b64encode(password).decode('utf-8')  # Encriptamos la contraseña actual
+    encryptedNewPassword = base64.b64encode(newPassword).decode('utf-8')  # Encriptamos la nueva contraseña
+
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            sql = "UPDATE users SET password = %s WHERE username = %s and password = %s"
+            cursor.execute(sql, (encryptedNewPassword, username, encryptedPassword))
+            connection.commit()
+
+        return jsonify({"status": "Usuario registrado con éxito"}), 200
+    finally:
+        connection.close()
+
+
+# Ruta para obtener mis prompts que he hecho
+@app.route("/me/getMyPrompts", methods=["GET"])
+def getMyPrompts():
+    # Obtener el parámetro 'username' de la URL
+    username = request.args.get("username")  # request.args para obtener parámetros de la URL
+
+    if not username:
+        return jsonify({"error": "Username is required"}), 400
+
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Incluir el 'id' del prompt en la consulta
+            sql = "SELECT id, username, prompt, date, likes FROM prompts WHERE username = %s"
+            cursor.execute(sql, (username,))
+            results = cursor.fetchall()
+
+            # Convertir los resultados en un formato legible (lista de diccionarios)
+            prompts_list = [{
+                "id": row[0],         # ID del prompt
+                "username": row[1],
+                "prompt": row[2],
+                "date": row[3],
+                "likes": row[4]
+            } for row in results]
+
+            return jsonify({"results": prompts_list}), 200
+    finally:
+        connection.close()
+
+@app.route("/updatePrompt/<int:prompt_id>", methods=["PUT"])
+def update_prompt(prompt_id):
+    data = request.get_json()
+    new_prompt = data.get("prompt")
+
+    if not new_prompt:
+        return jsonify({"error": "New prompt text is required"}), 400
+
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Verificar si el prompt existe
+            sql_check = "SELECT * FROM prompts WHERE id = %s"
+            cursor.execute(sql_check, (prompt_id,))
+            prompt = cursor.fetchone()
+
+            if not prompt:
+                return jsonify({"error": "Prompt not found"}), 404
+
+            # Actualizar el prompt con el nuevo texto
+            sql_update = "UPDATE prompts SET prompt = %s WHERE id = %s"
+            cursor.execute(sql_update, (new_prompt, prompt_id))
+            connection.commit()
+
+        return jsonify({"status": "Prompt updated successfully"}), 200
+    finally:
+        connection.close()
+# Solicitudes para la sección Friends
+# Ruta para obtener A
+@app.route("/friends/random", methods=["GET"])
+def get_random_users():
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Fetch 20 random users from the database
+            sql = "SELECT username FROM users ORDER BY RAND() LIMIT 20"
+            cursor.execute(sql)
+            users = cursor.fetchall()
+
+            # Convertir la lista de tuplas en una lista simple de cadenas
+            user_list = [user[0] for user in users]
+
+        return jsonify({"users": user_list}), 200
+    finally:
+        connection.close()
+
+
+@app.route("/friends/search", methods=["GET"])
+def search_user():
+    # Obtener el 'username' del usuario desde los parámetros de consulta
+    username = request.args.get('username') 
+
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Buscar el usuario por 'username'
+            sql = "SELECT username FROM users WHERE username = %s"
+            cursor.execute(sql, (username,))
+            user = cursor.fetchone()
+
+        if user:
+            # Devolver el resultado como un diccionario con el 'username'
+            user_data = {
+                "username": user[0]
+            }
+            return jsonify({"user": user_data}), 200
+        else:
+            return jsonify({"user": None}), 404
+    finally:
+        connection.close()
+
+
+
+@app.route("/follow", methods=["POST"])
+def follow_user():
+    # Obtener los nombres de usuario (username) del seguidor y seguido
+    follower_username = request.form.get('follower_username')  
+    followee_username = request.form.get('followee_username')  
+
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Verificar si ya existe una relación de seguimiento
+            sql_check = "SELECT * FROM follows WHERE follower_username = %s AND followee_username = %s"
+            cursor.execute(sql_check, (follower_username, followee_username))
+            follow_exists = cursor.fetchone()
+
+            if follow_exists:
+                return jsonify({"status": "Already following"}), 400
+
+            # Si no existe la relación, insertarla
+            sql_insert = "INSERT INTO follows (follower_username, followee_username) VALUES (%s, %s)"
+            cursor.execute(sql_insert, (follower_username, followee_username))
+            connection.commit()
+
+        return jsonify({"status": "Follow successful"}), 200
+    finally:
+        connection.close()
+
+
+
+@app.route("/friends", methods=["GET"])
+def get_friends():
+    follower_username = request.args.get('follower_id')   
+
+    if not follower_username:
+        return jsonify({"status": "Error", "message": "follower_username is required"}), 400
+
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Obtener los usuarios que el usuario sigue, basado en el username
+            sql = """
+            SELECT u.username 
+            FROM users u
+            JOIN follows f ON u.username = f.followee_username
+            WHERE f.follower_username = %s
+            """
+            cursor.execute(sql, (follower_username,))
+            friends = cursor.fetchall()
+
+        # Convertir los resultados a un formato de lista de diccionarios
+        friends_list = [{"username": friend[0]} for friend in friends]
+
+        return jsonify({"friends": friends_list}), 200
+    finally:
+        connection.close()
+
+@app.route("/feed", methods=["GET"])
+def get_feed():
+    username = request.args.get('username')  # Obtener el nombre de usuario del que solicita el feed
+
+    if not username:
+        return jsonify({"error": "Username is required"}), 400
+
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Obtener los nombres de usuario de los amigos del usuario logueado
+            sql_friends = """
+                SELECT followee_username 
+                FROM follows 
+                WHERE follower_username = %s
+            """
+            cursor.execute(sql_friends, (username,))
+            friends = cursor.fetchall()
+            friend_usernames = [f[0] for f in friends]
+            friend_usernames.append(username)  # Incluir también los prompts del propio usuario
+
+            # Obtener los prompts de los amigos y del usuario logueado, ordenados por fecha
+            sql_prompts = """
+                SELECT p.id, p.username, p.prompt, p.date, p.likes 
+                FROM prompts p
+                WHERE p.username IN %s
+                ORDER BY p.date DESC
+            """
+            cursor.execute(sql_prompts, (tuple(friend_usernames),))
+            prompts = cursor.fetchall()
+
+        # Crear la lista de resultados con id, username, prompt, likes y date
+        prompts_list = [{
+            "id": p[0],
+            "username": p[1],
+            "prompt": p[2],
+            "date": p[3],
+            "likes": p[4]
+        } for p in prompts]
+
+        return jsonify({"feed": prompts_list}), 200
+    finally:
+        connection.close()
+
+@app.route("/deletePrompts/<int:prompt_id>", methods=["DELETE"])
+def delete_prompt(prompt_id):
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            # Verificar si el prompt existe antes de intentar eliminarlo
+            sql_check = "SELECT * FROM prompts WHERE id = %s"
+            cursor.execute(sql_check, (prompt_id,))
+            prompt = cursor.fetchone()
+
+            if not prompt:
+                return jsonify({"error": "Prompt not found"}), 404
+
+            # Eliminar los likes asociados al prompt
+            sql_delete_likes = "DELETE FROM likes WHERE prompt_id = %s"
+            cursor.execute(sql_delete_likes, (prompt_id,))
+
+            # Eliminar el prompt de la base de datos
+            sql_delete_prompt = "DELETE FROM prompts WHERE id = %s"
+            cursor.execute(sql_delete_prompt, (prompt_id,))
+
+            connection.commit()
+
+        return jsonify({"status": "Prompt and associated likes deleted successfully"}), 200
+    finally:
+        connection.close()
+
+print("Ejecutando API")  
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5005)
+    print("Termina")
