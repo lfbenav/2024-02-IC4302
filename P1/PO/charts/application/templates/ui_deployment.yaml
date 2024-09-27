@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.config.service.name }}-deployment
+  labels:
+    app: {{ .Values.config.service.name }}
+spec:
+  replicas: {{ .Values.config.service.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.config.service.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.config.service.name }}
+    spec:
+      containers:
+      - name: {{ .Values.config.service.name }}
+        image: "{{ .Values.config.docker_registry }}/{{ .Values.config.service.image }}"
+        ports:
+        - containerPort: {{ .Values.config.service.targetPort }}

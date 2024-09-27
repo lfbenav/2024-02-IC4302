@@ -19,3 +19,7 @@ cd ../flask-api
 
 docker build -t $1/flask-api .
 docker push $1/flask-api
+
+cd ../ui
+docker build -t $1/ui .
+docker push $1/ui
