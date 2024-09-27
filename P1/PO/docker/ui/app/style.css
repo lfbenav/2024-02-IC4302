@@ -267,3 +267,281 @@ body {
   color: #333;
 }
 
+/* Styles for the Ask results */
+.ask-results {
+  margin-top: 20px;
+}
+/* Container for the friends grid */
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Individual friend card */
+.friend-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.friend-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+}
+
+/* Friend avatar */
+.friend-avatar {
+  border-radius: 50%;
+  margin-bottom: 10px;
+  width: 100px;
+  height: 100px;
+}
+
+/* Friend info */
+.friend-info h3 {
+  margin: 0;
+  font-size: 1.2em;
+  color: #333;
+}
+
+/* Message styles */
+p {
+  font-size: 1.1em;
+  color: #666;
+}
+.feed-list {
+  max-height: 600px;   /* Adjust this height based on your layout */
+  overflow-y: auto;    /* Allow vertical scrolling */
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.feed-item {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.feed-item:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.feed-item h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.feed-item p {
+  margin: 5px 0;
+}
+
+.feed-item p strong {
+  color: #555;
+}
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.feed-item {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.feed-item:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.feed-item h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.feed-item p {
+  margin: 5px 0;
+}
+
+.feed-item p strong {
+  color: #555;
+}
+
+/* Botones de Like y Ask */
+.button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+
+.ask-button {
+  background-color: #6495ED;
+}
+
+.ask-button:hover {
+  background-color: #4169E1;
+}
+
+/* Estilo del modal y resultados de Ask */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 80%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  color: #888;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+.ask-results {
+  margin-top: 20px;
+}
+
+.ask-result-item {
+  padding: 15px;
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.me-section {
+  max-height: 600px;   /* Adjust this height based on your layout */
+  overflow-y: auto;    /* Allow vertical scrolling */
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.me-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.me-details {
+  margin-bottom: 20px;
+}
+
+.me-form {
+  margin-bottom: 30px;
+}
+
+.input-group {
+  margin-bottom: 10px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-button {
+  background-color: #dc3545;
+}
+
+.my-prompts {
+  margin-top: 20px;
+}
+
+.prompt-list {
+  list-style: none;
+  padding: 0;
+}
+
+.prompt-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  background-color: #e9ecef;
+  padding: 10px;
+  border-radius: 8px;
+}
+/* Asegúrate de que la clase 'section' o la clase del contenedor tenga suficiente padding */
+.section {
+  padding-top: 0px; /* Ajusta este valor según el tamaño de tu menú */
+}
+
+/* Si el menú tiene una posición fija, también puedes asegurarte de que haya suficiente espacio en el body */
+body {
+  margin: 0;
+  padding-top: 80px; /* El mismo valor que el alto del menú */
+}
+
+/* Ajustes para que el menú no se sobreponga a los prompts */
+.menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; 
+}
