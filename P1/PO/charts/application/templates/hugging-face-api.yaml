@@ -1,34 +1,59 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ .Values.config.consumer.name }}  # Toma el nombre de values.yaml
-spec:
-  replicas: {{ .Values.config.consumer.replicas }}  # Define el número de réplicas (en este caso, 2)
-  selector:
-    matchLabels:
-      app: {{ .Values.config.consumer.name }}  # Selector para identificar los pods correctos
-  template:
-    metadata:
-      labels:
-        app: {{ .Values.config.consumer.name }}
-    spec:
-      containers:
-      - name: {{ .Values.config.consumer.name }}
-        image: "{{ .Values.docker_registry }}/{{ .Values.config.consumer.image }}"  # Imagen desde values.yaml
-        ports:
-        - containerPort: 5000  # Puerto en el que corre tu API
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: {{ .Values.config.consumer.name }}  # Toma el nombre de values.yaml
+# spec:
+#   replicas: {{ .Values.config.consumer.replicas }}  # Define el número de réplicas (en este caso, 2)
+#   selector:
+#     matchLabels:
+#       app: {{ .Values.config.consumer.name }}  # Selector para identificar los pods correctos
+#   template:
+#     metadata:
+#       labels:
+#         app: {{ .Values.config.consumer.name }}
+#     spec:
+#       containers:
+#       - name: {{ .Values.config.consumer.name }}
+#         image: {{ .Values.docker_registry }}/{{ .Values.config.consumer.image }}  # Imagen desde values.yaml  Le quite las comillas ""
+#         ports:
+#         - containerPort: 5000  # Puerto en el que corre tu API
 
-apiVersion: v1
-kind: Service
-metadata:
-  name: hugging-face-api-nodeport
-  namespace: default
-spec:
-  ports:
-    - name: http
-      protocol: TCP
-      port: 5000  # Cambiado a 5000 para coincidir con Flask
-      targetPort: 5000  # Cambiado a 5000 para coincidir con Flask
-  selector:
-    app: hugging-face-api
-  type: NodePort
+# ---
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: hugging-face-api-nodeport
+#   namespace: default
+#   labels:                                                                     ### EUltima cosa que cambie
+#     app: hugging-face-api  # Esta etiqueta debe coincidir con el ServiceMonitor  ####
+# spec:
+#   ports:
+#     - name: hugging-face-http  # Cambia el nombre del puerto a algo único
+#       protocol: TCP
+#       port: 5000  # Cambiado a 5000 para coincidir con Flask
+#       targetPort: 5000  # Cambiado a 5000 para coincidir con Flask
+#   selector:
+#     app: hugging-face-api
+#   type: NodePort
+
+# ---
+
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: hugging-face-api-monitor
+#   labels:
+#     app: hugging-face-api  # Debe coincidir con el label del Service
+#   namespace: monitoring
+# spec:
+#   selector:
+#     matchLabels:
+#       app: hugging-face-api  # Este label debe coincidir con el selector en el Service
+#   endpoints:
+#   - port: hugging-face-http  # Nombre del puerto que debe coincidir con el del Service
+#     path: metrics  # El endpoint donde expone las métricas 
+#     interval: 15s
+#   namespaceSelector:
+#     matchNames:
+#     - default  # El namespace donde corre tu API

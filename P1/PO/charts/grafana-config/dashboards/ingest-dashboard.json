@@ -1,0 +1,158 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "panels": [
+      {
+        "datasource": "Prometheus",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "title": "Cantidad de objetos procesados",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(processed_objects_total)",
+            "legendFormat": "Total objetos procesados",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "datasource": "Prometheus",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 4
+        },
+        "id": 2,
+        "title": "Cantidad de filas procesadas",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(processed_rows_total)",
+            "legendFormat": "Total filas procesadas",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "datasource": "Prometheus",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "id": 3,
+        "title": "Cantidad de filas con error",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(error_rows_total)",
+            "legendFormat": "Total filas con error",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "datasource": "Prometheus",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 12
+        },
+        "id": 4,
+        "title": "Tiempo de procesamiento de un objeto (Max, Min, Promedio)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "avg_over_time(object_processing_time_seconds_sum[5m])",
+            "legendFormat": "Promedio",
+            "refId": "A"
+          },
+          {
+            "expr": "max_over_time(object_processing_time_seconds_sum[5m])",
+            "legendFormat": "Máximo",
+            "refId": "B"
+          },
+          {
+            "expr": "min_over_time(object_processing_time_seconds_sum[5m])",
+            "legendFormat": "Mínimo",
+            "refId": "C"
+          }
+        ]
+      },
+      {
+        "datasource": "Prometheus",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        },
+        "id": 5,
+        "title": "Tiempo de procesamiento de una fila (Max, Min, Promedio)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "avg_over_time(row_processing_time_seconds_sum[5m])",
+            "legendFormat": "Promedio",
+            "refId": "A"
+          },
+          {
+            "expr": "max_over_time(row_processing_time_seconds_sum[5m])",
+            "legendFormat": "Máximo",
+            "refId": "B"
+          },
+          {
+            "expr": "min_over_time(row_processing_time_seconds_sum[5m])",
+            "legendFormat": "Mínimo",
+            "refId": "C"
+          }
+        ]
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 16,
+    "style": "dark",
+    "tags": [],
+    "title": "Ingest Dashboard",
+    "version": 1,
+    "time": {
+      "from": "now-15m",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h"
+      ]
+    }
+  }
+  

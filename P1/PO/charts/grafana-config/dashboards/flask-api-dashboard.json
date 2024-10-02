@@ -1,0 +1,169 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "title": "Total HTTP Requests",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "sum(http_requests_total)",
+          "legendFormat": "Total Requests",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "id": 2,
+      "title": "Request Latency (Average, Max, Min) - With Cache",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "avg_over_time(request_duration_seconds_with_cache_sum[5m])",
+          "legendFormat": "Avg Latency with Cache",
+          "refId": "A"
+        },
+        {
+          "expr": "max_over_time(request_duration_seconds_with_cache_sum[5m])",
+          "legendFormat": "Max Latency with Cache",
+          "refId": "B"
+        },
+        {
+          "expr": "min_over_time(request_duration_seconds_with_cache_sum[5m])",
+          "legendFormat": "Min Latency with Cache",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "title": "Request Latency (Average, Max, Min) - Without Cache",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "avg_over_time(request_duration_seconds_without_cache_sum[5m])",
+          "legendFormat": "Avg Latency without Cache",
+          "refId": "A"
+        },
+        {
+          "expr": "max_over_time(request_duration_seconds_without_cache_sum[5m])",
+          "legendFormat": "Max Latency without Cache",
+          "refId": "B"
+        },
+        {
+          "expr": "min_over_time(request_duration_seconds_without_cache_sum[5m])",
+          "legendFormat": "Min Latency without Cache",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "id": 4,
+      "title": "Cache Hits",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "sum(cache_hits_total)",
+          "legendFormat": "Cache Hits",
+          "refId": "A"
+        }
+      ],
+      "conditions": [
+        {
+          "type": "cache_enabled",
+          "expr": "USE_CACHE == true"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "title": "Cache Misses",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "sum(cache_misses_total)",
+          "legendFormat": "Cache Misses",
+          "refId": "A"
+        }
+      ],
+      "conditions": [
+        {
+          "type": "cache_enabled",
+          "expr": "USE_CACHE == true"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 16,
+  "style": "dark",
+  "tags": [],
+  "title": "Flask Api",
+  "version": 1,
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h"
+    ]
+  }
+}

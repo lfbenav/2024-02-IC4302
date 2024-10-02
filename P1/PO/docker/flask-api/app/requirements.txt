@@ -5,3 +5,4 @@ pymysql
 prometheus_client
 boto3
 requests
+pylibmc

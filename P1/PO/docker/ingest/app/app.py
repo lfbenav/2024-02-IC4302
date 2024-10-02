@@ -7,6 +7,24 @@ from elasticsearch.helpers import bulk
 import pandas as pd
 from io import StringIO
 from elasticsearch import Elasticsearch
+from prometheus_client import Counter, Histogram, start_http_server
+import logging
+
+# Metricas de Prometheus
+PROCESSED_OBJECTS = Counter('processed_objects_total', 'Cantidad de objetos procesados')
+PROCESSED_ROWS = Counter('processed_rows_total', 'Cantidad de filas procesadas')
+ERROR_ROWS = Counter('error_rows_total', 'Cantidad de filas con error')
+OBJECT_PROCESSING_TIME = Histogram('object_processing_time_seconds', 'Tiempo de procesamiento de un objeto')
+ROW_PROCESSING_TIME = Histogram('row_processing_time_seconds', 'Tiempo de procesamiento de una fila')
+
+# Configurar logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler()] 
+)
+
+logger = logging.getLogger(__name__)
 
 #CREDENCIALES BUCKET
 BUCKET= os.getenv("BUCKET")
@@ -17,18 +35,14 @@ PREFIX = os.getenv("PREFIX")
 #HUGGING-FACE-API
 HUGGING_FACE_API = os.getenv('HUGGING_FACE_API')
 HUGGING_FACE_API_PORT = os.getenv("HUGGING_FACE_PORT")
-print(HUGGING_FACE_API)
-print(HUGGING_FACE_API_PORT)
+logger.info(f"Hugging Face API: {HUGGING_FACE_API}, Puerto: {HUGGING_FACE_API_PORT}")
 
 #Credenciales RabbitMQ
 RABBITMQ_USER = os.getenv('RABBITMQ_USER')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS')  
 RABBITMQ_QUEUE = os.getenv('RABBITMQ_QUEUE')
 RABBITMQ = os.getenv('RABBITMQ')
-print(RABBITMQ_USER)
-print(RABBITMQ_PASS)
-print(RABBITMQ_QUEUE)
-print(RABBITMQ)
+logger.info(f"RabbitMQ: {RABBITMQ}, Usuario: {RABBITMQ_USER}")
 
 #credenciales MariaDB
 MARIADB_USER = os.getenv('MARIADB_USER')
@@ -36,7 +50,6 @@ MARIADB_PASS = os.getenv('MARIADB_PASS')
 MARIADB = os.getenv('MARIADB')
 MARIADB_DB = os.getenv('MARIADB_DB')
 MARIADB_TABLE = os.getenv('MARIADB_TABLE')
-
 
 # Utilizar la contraseña en la conexión a Elasticsearch
 ELASTIC_PASSWORD = os.getenv("ELASTIC_PASS") # O el puerto que se mapea
@@ -47,10 +60,10 @@ ELASTIC_PORT = os.getenv("ELASTIC_PORT")
 
 es_url = f"http://{ELASTIC_SERVICE}:{ELASTIC_PORT}"
 
-
 # Conexión a Elasticsearch
 es = Elasticsearch(es_url, basic_auth=(ELASTIC_USER, ELASTIC_PASSWORD))
-print("oayyyy...")
+logger.info(f"Conectando a Elasticsearch en: {es_url}")
+
 # Definir el cuerpo del índice con el campo 'embeddings' como dense_vector
 index_body = {
     "settings": {
@@ -89,18 +102,18 @@ index_body = {
 # Crear el índice con el mapeo correcto
 if not es.indices.exists(index="songs"):
     es.indices.create(index="songs", body=index_body)
-    print(f"Índice 'songs' creado con éxito.")
+    logger.info("Índice 'songs' creado con éxito.")
 else:
-    print(f"El índice 'songs' ya existe.")
+    logger.info("El índice 'songs' ya existe.")
 
 # Crear el índice si no existe
 index_name = "songs"
 
 if not es.indices.exists(index=index_name):
     es.indices.create(index=index_name, body=index_body)
-    print(f"Índice '{index_name}' creado con éxito.")
+    logger.info(f"Índice '{index_name}' creado con éxito.")
 else:
-    print(f"El índice '{index_name}' ya existe.")
+    logger.info(f"El índice '{index_name}' ya existe.")
 
 #Conexion al bucket
 session = boto3.Session(
@@ -155,29 +168,36 @@ def mark_file_as_processed(filename, connection):
 # Función para descargar un archivo desde S3
 def download_from_s3(filename):
     response = s3.get_object(Bucket=BUCKET, Key=filename)
+    logger.info(f"Archivo {filename} descargado desde S3.")
     return response['Body'].read().decode('utf-8')
 
 # Función para generar embedding usando Hugging Face API
 def generate_embedding(text):
+    logger.info("Generando embedding para el texto.")
     response = requests.post(f"http://{HUGGING_FACE_API}:{HUGGING_FACE_API_PORT}/encode", json={"text": text})
     if response.status_code == 200:
         embedding_data = response.json()  # Obtener el JSON completo
         embedding = embedding_data.get("embeddings", None)  # Extraer el embedding
         if embedding:
+            logger.info("Embedding generado con éxito.")
             return embedding  # Devuelve solo el embedding
         else:
+            logger.error(f"No se encontró el embedding en la respuesta: {embedding_data}")
             raise Exception(f"No se encontró el embedding en la respuesta: {embedding_data}")
     else:
+        logger.error(f"Error al generar embedding, Status Code: {response.status_code}")
         raise Exception(f"Error al generar embedding desde Hugging Face API, Status Code: {response.status_code}")
 
+@OBJECT_PROCESSING_TIME.time()
 def process_csv(data, filename, batch_size=1):
     # Leer el CSV usando pandas
+    logger.info(f"Procesando archivo {filename}.")
     df = pd.read_csv(StringIO(data), delimiter=',', encoding='utf-8')
     connection = pymysql.connect(user=MARIADB_USER, password=MARIADB_PASS, host=MARIADB, database=MARIADB_DB)
     
     # Verificar si el archivo ya ha sido procesado
     if is_file_processed(filename, connection):
-        print(f"El archivo {filename} ya ha sido procesado.")
+        logger.warning(f"El archivo {filename} ya ha sido procesado.")
         connection.close()
         return
 
@@ -191,38 +211,45 @@ def process_csv(data, filename, batch_size=1):
         song_id = row['id']  # Asegúrate de tener el identificador de la canción (ajústalo a tu esquema)
 
         if is_song_processed(song_id, connection):
-            print(f"La canción {song_id} ya ha sido procesada. Saltando.")
+            logger.info(f"La canción {song_id} ya ha sido procesada. Saltando.")
             continue
 
-        # Procesar las lyrics y otros campos
-        if pd.isna(row['album_name']) or row['album_name'] == "":
-            row['album_name'] = "Unknown Album"
-        if pd.isna(row['lyrics']) or row['lyrics'] == "":
-            row['lyrics'] = "No lyrics available"
-        if pd.isna(row['name']) or row['name'] == "":
-            row['name'] = "Unknown Song"
-        if pd.isna(row['artists']) or row['artists'] == "":
-            row['artists'] = "Unknown Artist"
+        with ROW_PROCESSING_TIME.time():
+            try:
+                # Procesar las lyrics y otros campos
+                if pd.isna(row['album_name']) or row['album_name'] == "":
+                    row['album_name'] = "Unknown Album"
+                if pd.isna(row['lyrics']) or row['lyrics'] == "":
+                    row['lyrics'] = "No lyrics available"
+                if pd.isna(row['name']) or row['name'] == "":
+                    row['name'] = "Unknown Song"
+                if pd.isna(row['artists']) or row['artists'] == "":
+                    row['artists'] = "Unknown Artist"
 
-        lyrics = row['lyrics']
-        embedding = generate_embedding(lyrics)
-        row['embedding'] = embedding
+                lyrics = row['lyrics']
+                embedding = generate_embedding(lyrics)
+                row['embedding'] = embedding
 
-        # Convertir la fila a diccionario y añadirla a la lista de documentos
-        document = row.to_dict()
+                # Convertir la fila a diccionario y añadirla a la lista de documentos
+                document = row.to_dict()
 
-        # Preparar el formato necesario para la API Bulk de Elasticsearch
-        documents.append({
-            "_index": "songs",
-            "_source": document
-        })
+                # Preparar el formato necesario para la API Bulk de Elasticsearch
+                documents.append({
+                    "_index": "songs",
+                    "_source": document
+                })
 
-        total_docs += 1
+                total_docs += 1
+                PROCESSED_ROWS.inc()
+
+            except Exception as e:
+                logger.error(f"Error al procesar la fila {index}: {str(e)}")
+                ERROR_ROWS.inc()
 
         # Si alcanzamos el tamaño del lote, subir los documentos a Elasticsearch
         if len(documents) >= batch_size:
             success, failed = bulk(es, documents)
-            print(f"{success} documentos subidos exitosamente, {failed} documentos fallaron.")
+            logger.info(f"{success} documentos subidos exitosamente, {failed} documentos fallaron.")
             
             # Marcar la canción como procesada
             mark_song_as_processed(song_id, connection)
@@ -233,26 +260,27 @@ def process_csv(data, filename, batch_size=1):
     # Subir cualquier documento restante
     if documents:
         success, failed = bulk(es, documents)
-        print(f"{success} documentos subidos exitosamente, {failed} documentos fallaron.")
+        logger.info(f"{success} documentos subidos exitosamente, {failed} documentos fallaron.")
 
     # Marcar el archivo como procesado
     mark_file_as_processed(filename, connection)
     connection.close()
+    logger.info(f"Archivo {filename} procesado correctamente.")
+    PROCESSED_OBJECTS.inc()
     
 # Función para consumir mensajes desde RabbitMQ
 def callback(ch, method, properties, body):
     filename = body.decode('utf-8')
+    logger.info(f"Recibido mensaje: {filename}")
     connection = pymysql.connect(user=MARIADB_USER, password=MARIADB_PASS, host=MARIADB, database=MARIADB_DB)
-    print(f"Recibido mensaje: {filename}")
     # Verificar si el archivo ya fue procesado
     if is_file_processed(filename, connection):
-        print(f"Archivo {filename} ya fue procesado. Se ignora.")
+        logger.warning(f"Archivo {filename} ya fue procesado. Se ignora.")
         return
     connection.close()
     # Descargar archivo desde S3 y procesarlo
     data = download_from_s3(filename)
     process_csv(data, filename)
-    print(f"Archivo {filename} procesado correctamente.")
 
 # Conexión a RabbitMQ y configuración de consumo
 def start_rabbitmq_consumer():
@@ -263,9 +291,10 @@ def start_rabbitmq_consumer():
 
     # Consumir mensajes de la cola
     channel.basic_consume(queue=RABBITMQ_QUEUE, on_message_callback=callback, auto_ack=True)
-    print('Esperando mensajes. Presiona CTRL+C para salir.')
+    logger.info('Esperando mensajes. Presiona CTRL+C para salir.')
     channel.start_consuming()
 
 if __name__ == '__main__':
-    print("Iniciando el consumidor de RabbitMQ...")
+    start_http_server(9101)
+    logger.info("Iniciando el consumidor de RabbitMQ...")
     start_rabbitmq_consumer()

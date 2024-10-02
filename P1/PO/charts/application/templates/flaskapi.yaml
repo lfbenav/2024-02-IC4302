@@ -1,34 +1,59 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ .Values.config.flask.name }}  # Takes the name from values.yaml
-spec:
-  replicas: {{ .Values.config.flask.replicas }}  # Number of replicas, e.g., 2
-  selector:
-    matchLabels:
-      app: {{ .Values.config.flask.name }}  # Must match the selector used in the service
-  template:
-    metadata:
-      labels:
-        app: {{ .Values.config.flask.name }}  # Ensure this matches in both Deployment and Service
-    spec:
-      containers:
-      - name: {{ .Values.config.flask.name }}
-        image: "{{ .Values.docker_registry }}/{{ .Values.config.flask.image }}"  # Flask image
-        ports:
-        - containerPort: 5005  # Match the port Flask is running on inside the container
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: {{ .Values.config.flask.name }}  # Takes the name from values.yaml
+# spec:
+#   replicas: {{ .Values.config.flask.replicas }}  # Number of replicas, e.g., 2
+#   selector:
+#     matchLabels:
+#       app: {{ .Values.config.flask.name }}  # Must match the selector used in the service
+#   template:
+#     metadata:
+#       labels:
+#         app: {{ .Values.config.flask.name }}  # Ensure this matches in both Deployment and Service
+#     spec:
+#       containers:
+#       - name: {{ .Values.config.flask.name }}
+#         image: {{ .Values.docker_registry }}/{{ .Values.config.flask.image }}  # Flask image   le quite las comillas
+#         ports:
+#         - containerPort: 5005  # Match the port Flask is running on inside the container
 
-apiVersion: v1
-kind: Service
-metadata:
-  name: flask-api-nodeport
-  namespace: default
-spec:
-  ports:
-    - name: flask-api-http  # Cambia el nombre del puerto para hacerlo único
-      protocol: TCP
-      port: 5005  # Mantén el puerto 5005
-      targetPort: 5005  # Mantén el puerto 5005
-  selector:
-    app: flask-api
-  type: NodePort
+# ---
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: flask-api-nodeport
+#   namespace: default
+#   labels:                                                                     ### EUltima cosa que cambie
+#     app: flask-api  # Esta etiqueta debe coincidir con el ServiceMonitor  ####
+# spec:
+#   ports:
+#     - name: flask-api-http  # Cambia el nombre del puerto para hacerlo único
+#       protocol: TCP
+#       port: 5005  # Mantén el puerto 5005
+#       targetPort: 5005  # Mantén el puerto 5005
+#   selector:
+#     app: flask-api
+#   type: NodePort
+
+# ---
+
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: flask-api-monitor
+#   labels:
+#     app: flask-api  # Debe coincidir con el label del Service
+#   namespace: monitoring
+# spec:
+#   selector:
+#     matchLabels:
+#       app: flask-api  # Este label debe coincidir con el selector en el Service
+#   endpoints:
+#   - port: flask-api-http  # Nombre del puerto que debe coincidir con el del Service
+#     path: metrics  # El endpoint donde Flask expone las métricas 
+#     interval: 15s
+#   namespaceSelector:
+#     matchNames:
+#     - default  # El namespace donde corre tu API Flask

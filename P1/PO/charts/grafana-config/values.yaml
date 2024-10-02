@@ -1,0 +1,39 @@
+prometheus: 
+  namespace: monitoring
+dashboards:
+  prometheus-elasticsearch-exporter:
+    name: prometheus-elasticsearch-exporter
+    file: prometheus-elasticsearch-exporter.json
+    enable: true
+  elasticsearch:
+    name: elasticsearch
+    file: elasticsearch.json
+    enable: true
+  memcached:
+    name: memcached
+    file: memcached.json
+    enable: true
+  mariadb:
+    name: mariadb
+    file: mariadb.json
+    enable: true
+  flask-api:                      #
+    name: flask-api                   #
+    file: flask-api-dashboard.json  #
+    enable: true                          #
+  hugging-face-api:                      #
+    name: hugging-face-api                #
+    file: hugging-face-api-dashboard.json  #
+    enable: true                          #
+  s3crawler:
+    name: s3crawler
+    file: s3-crawler-dashboard.json  #
+    enable: true 
+  ingest:
+    name: ingest
+    file: ingest-dashboard.json  #
+    enable: true 
+  rabbitmq:
+    name: rabbitmq
+    file: rabbitmq.json
+    enable: true 

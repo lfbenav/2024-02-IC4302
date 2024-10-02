@@ -66,6 +66,7 @@ function App() {
     if (result.status === 'Usuario registrado con éxito') {
       alert('User registered successfully!');
     } else {
+      alert("This username is already taken.")
       setErrorMessage('Registration failed.');
     }
   };
@@ -635,6 +636,8 @@ function FindFriends() {
   );
 }
 
+
+
 function Friends() {  
   const [friends, setFriends] = useState([]);
   const [message, setMessage] = useState("No friends added yet.");
@@ -682,6 +685,9 @@ function Friends() {
     </div>
   );
 }
+
+
+
 
 function Feed() {
   const [prompts, setPrompts] = useState([]);
@@ -1195,6 +1201,7 @@ const closeSubMenu = () => {
   );
 }
 
+
+
 // Renderizar la aplicación
 ReactDOM.render(<App />, document.getElementById('root'));
-

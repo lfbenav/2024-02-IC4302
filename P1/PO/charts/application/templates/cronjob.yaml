@@ -10,6 +10,9 @@ spec:
     spec:
       backoffLimit: 3
       template:
+        metadata:
+          labels:
+            app: s3crawler  # Añadir esta etiqueta
         spec:
           terminationGracePeriodSeconds: 0
           restartPolicy: Never
@@ -64,3 +67,44 @@ spec:
                   name: data
                 - name: scripts
                   mountPath: /scripts
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.config.cronjob.name }}
+  namespace: default
+  labels:
+    app: {{ .Values.config.cronjob.name }}
+spec:
+  ports:
+    - name: metrics
+      port: 9102  # Este es el puerto donde se expondrán las métricas
+      targetPort: 9102
+      protocol: TCP
+  selector:
+    app: {{ .Values.config.cronjob.name }}
+  type: NodePort
+
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cronjob-monitor
+  labels:
+    app: {{ .Values.config.cronjob.name }}  # Debe coincidir con el label del Service
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.config.cronjob.name }}  # Debe coincidir con el selector del Service
+  endpoints:
+  - port: metrics  # El nombre del puerto que definimos en el Service
+    path: metrics
+    interval: 15s
+  namespaceSelector:
+    matchNames:
+    - default  # El namespace donde corre tu CronJob

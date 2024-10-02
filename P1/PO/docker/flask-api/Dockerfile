@@ -5,9 +5,10 @@ WORKDIR /app
 
 COPY app/. .
 
-RUN apt-get update -y
-RUN apt-get install -y libmariadb-dev
-RUN apt install build-essential -y 
+RUN apt-get update -y \
+    && apt-get install -y libmariadb-dev build-essential libmemcached-dev zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 CMD [ "python", "-u", "./app.py" ]

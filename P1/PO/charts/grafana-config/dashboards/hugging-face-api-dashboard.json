@@ -1,0 +1,91 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "panels": [
+      {
+        "datasource": "Prometheus",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "title": "Total HTTP Requests",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(api_requests_total)",
+            "legendFormat": "Total Requests",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "datasource": "Prometheus",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 4
+        },
+        "id": 2,
+        "title": "Embedding Request Latency (Average, Max, Min)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "avg(embedding_generation_seconds_sum) by (endpoint)",
+            "legendFormat": "Avg Latency",
+            "refId": "A"
+          },
+          {
+            "expr": "max(embedding_generation_seconds_sum) by (endpoint)",
+            "legendFormat": "Max Latency",
+            "refId": "B"
+          },
+          {
+            "expr": "min(embedding_generation_seconds_sum) by (endpoint)",
+            "legendFormat": "Min Latency",
+            "refId": "C"
+          }
+        ]
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 16,
+    "style": "dark",
+    "tags": [],
+    "title": "Hugging Face Api",
+    "version": 1,
+    "time": {
+      "from": "now-15m",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h"
+      ]
+    }
+  }
+  

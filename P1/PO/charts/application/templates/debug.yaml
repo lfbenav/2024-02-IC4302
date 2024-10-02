@@ -81,3 +81,45 @@ spec:
                 optional: false
           - name: ELASTIC
             value: "ic4302-es-http"
+
+
+
+# ---
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: debug
+#   namespace: default
+#   labels:
+#     app: {{ .Values.config.debug.name }}
+# spec:
+#   ports:
+#     - name: metrics
+#       port: 9102  # Este es el puerto donde se expondrán las métricas
+#       targetPort: 9102
+#       protocol: TCP
+#   selector:
+#     app: {{ .Values.config.debug.name }}
+#   type: NodePort
+
+# ---
+
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: debug-monitor
+#   labels:
+#     app: debug  # Debe coincidir con el label del Service
+#   namespace: monitoring
+# spec:
+#   selector:
+#     matchLabels:
+#       app: {{ .Values.config.debug.name }}  # Debe coincidir con el selector del Service
+#   endpoints:
+#   - port: metrics  # El nombre del puerto que definimos en el Service
+#     path: metrics
+#     interval: 15s
+#   namespaceSelector:
+#     matchNames:
+#     - default  # El namespace donde corre tu CronJob

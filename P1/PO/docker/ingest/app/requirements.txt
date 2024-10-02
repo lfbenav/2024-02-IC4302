@@ -5,3 +5,4 @@ requests
 elasticsearch
 pandas
 langdetect
+prometheus_client

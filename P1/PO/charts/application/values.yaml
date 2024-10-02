@@ -1,5 +1,5 @@
 config:
-  docker_registry: alexnaranjo24
+  docker_registry: wisfer
   access_key: AKIAQ2VOGXQDTWAX4PUY
   secret_key: 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
   bucket: 2024-02-ic4302-gr1
@@ -7,26 +7,56 @@ config:
     replicas: 2 
     name: ingest
     image: ingest
+    metrics:              #
+      enabled: true       #
+      serviceMonitor:               #
+        enabled: true                 #
+        namespace: "monitoring"     #
   consumer:
-    replicas: 2
+    replicas: 3
     name: hugging-face-api
     image: hugging-face-api
-  debug:
-    replicas: 1
-    name: debug
-    image: s3crawler
-  cronjob:
-    name: s3crawler
-    image: s3crawler
-    schedule: "0/5 * * * *"
+    metrics:              #
+      enabled: true       #
+      serviceMonitor:               #
+        enabled: true                 #
+        namespace: "monitoring"     #
   flask:
-    replicas: 2
+    replicas: 3
     name: flask-api
     image: flask-api
+    metrics:              #
+      enabled: true       #
+      serviceMonitor:               #
+        enabled: true                 #
+        namespace: "monitoring"     #
   service:
     name: ui
     image: ui
     replicas: 2
     port: 80
     targetPort: 80
-    nodePort: 32000
+    nodePort: 32000 
+    metrics:              #
+      enabled: true       #
+      serviceMonitor:               #
+        enabled: true                 #
+        namespace: "monitoring"     #
+  debug:
+    replicas: 1
+    name: debug
+    image: s3crawler
+    # metrics:              #
+    #   enabled: true       #
+    #   serviceMonitor:               #
+    #     enabled: true                 #
+    #     namespace: "monitoring"     #
+  cronjob:
+    name: s3crawler
+    image: s3crawler
+    schedule: "0/5 * * * *" 
+    metrics:              #
+      enabled: true       #
+      serviceMonitor:               #
+        enabled: true                 #
+        namespace: "monitoring"     #

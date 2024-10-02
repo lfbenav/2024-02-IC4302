@@ -1,0 +1,101 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "panels": [
+      {
+        "datasource": "Prometheus",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "title": "Total Objects Processed",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(s3_crawler_objects_total)",
+            "legendFormat": "Total Objects",
+            "refId": "A"
+          }
+        ],
+        "lines": true,
+        "linewidth": 1,
+        "fill": 1,
+        "points": true,
+        "pointradius": 2
+      },
+      {
+        "datasource": "Prometheus",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 4
+        },
+        "id": 2,
+        "title": "Processing Time (Avg, Max, Min)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "avg(s3_crawler_processing_time_seconds_sum)",
+            "legendFormat": "Avg Processing Time",
+            "refId": "A"
+          },
+          {
+            "expr": "max(s3_crawler_processing_time_seconds_sum)",
+            "legendFormat": "Max Processing Time",
+            "refId": "B"
+          },
+          {
+            "expr": "min(s3_crawler_processing_time_seconds_sum)",
+            "legendFormat": "Min Processing Time",
+            "refId": "C"
+          }
+        ],
+        "lines": true,
+        "linewidth": 1,
+        "fill": 1,
+        "points": true,
+        "pointradius": 2
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 16,
+    "style": "dark",
+    "tags": [],
+    "title": "S3 Crawler Dashboard",
+    "version": 1,
+    "time": {
+      "from": "now-15m",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h"
+      ]
+    }
+  }
+  

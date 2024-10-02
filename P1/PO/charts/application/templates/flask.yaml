@@ -17,6 +17,8 @@ spec:
       containers:
       - name: {{ .Values.config.flask.name }}
         image: {{ .Values.config.docker_registry }}/{{ .Values.config.flask.image }}
+        ports:                                                                                  ####
+        - containerPort: 5005  # Match the port Flask is running on inside the container       ####
         env:
           - name: BUCKET
             value: "2024-02-ic4302-gr1"
@@ -60,4 +62,48 @@ spec:
             value: "databases-memcached"
           - name: MEMCACHED_PORT
             value: "11211"
+          - name: USE_CACHE
+            value: "True"
 
+
+#### De aqui abajo todo nuevo
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-api-nodeport
+  namespace: default
+  labels:                                                                     ### EUltima cosa que cambie
+    app: flask-api  # Esta etiqueta debe coincidir con el ServiceMonitor  ####
+spec:
+  ports:
+    - name: flask-api-http  # Cambia el nombre del puerto para hacerlo único
+      protocol: TCP
+      port: 5005  # Mantén el puerto 5005
+      targetPort: 5005  # Mantén el puerto 5005
+  selector:
+    app: flask-api
+  type: NodePort
+
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: flask-api-monitor
+  labels:
+    app: flask-api  # Debe coincidir con el label del Service
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: flask-api  # Este label debe coincidir con el selector en el Service
+  endpoints:
+  - port: flask-api-http  # Nombre del puerto que debe coincidir con el del Service
+    path: metrics  # El endpoint donde Flask expone las métricas 
+    interval: 15s
+  namespaceSelector:
+    matchNames:
+    - default  # El namespace donde corre tu API Flask

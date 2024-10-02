@@ -15,3 +15,24 @@ spec:
       nodePort: {{ .Values.config.service.nodePort }}  # El campo nodePort debe estar aquí, dentro del bloque de puertos
       {{- end }}
   type: NodePort
+
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Values.config.service.name }}-monitor
+  labels:
+    app: {{ .Values.config.service.name }}  # Debe coincidir con el label del Service
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.config.service.name }}  # Este label debe coincidir con el selector en el Service
+  endpoints:
+  - port: http  # Nombre del puerto que debe coincidir con el del Service
+    path: metrics  # El endpoint donde Flask expone las métricas 
+    interval: 15s
+  namespaceSelector:
+    matchNames:
+    - default  # El namespace donde corre tu API Flask
