@@ -5,93 +5,20 @@ Luis Fernando Benavides Villegas - 2023072689
 Juan Diego Jiménez - 2019199111  
 Alex Naranjo - 2023063599 
 
-
-- [Documentación del Proyecto #1](#documentación-del-proyecto-1)
-  - [**Instrucciones Para Ejecutar el Proyecto**](#instrucciones-para-ejecutar-el-proyecto)
-    - [1. Instalación y Configuración de Docker](#1-instalación-y-configuración-de-docker)
-    - [2. Otras Instalaciones](#2-otras-instalaciones)
-    - [3. Hacer el Build de las Imágenes de Docker](#3-hacer-el-build-de-las-imágenes-de-docker)
-    - [4. Configurar y Hacer el Install](#4-configurar-y-hacer-el-install)
-    - [5. Acceder a la UI](#5-acceder-a-la-ui)
-    - [6. Iniciar Sesión](#6-iniciar-sesión)
-    - [7. Hacer una Consulta](#7-hacer-una-consulta)
-  - [**Dahboards de Grafana**](#dahboards-de-grafana)
-    - [**Bases de Datos:**](#bases-de-datos)
-    - [**Aplicaciones:**](#aplicaciones)
-  - [**Pruebas Realizadas**](#pruebas-realizadas)
-  - [**Resultados de las Pruebas Unitarias**](#resultados-de-las-pruebas-unitarias)
-    - [Hugging Face API](#hugging-face-api)
-    - [Ingest](#ingest)
-    - [S3 Crawler](#s3-crawler)
-    - [Flask API](#flask-api)
-  - [**Explicación de Cada Componente**](#explicación-de-cada-componente)
+- [**Instrucciones Para Ejecutar el Proyecto**](#instrucciones-para-ejecutar-el-proyecto)
+- [**Dahboards de Grafana**](#dahboards-de-grafana)
+- [**Pruebas Realizadas**](#pruebas-realizadas)
+- [**Resultados de las Pruebas Unitarias**](#resultados-de-las-pruebas-unitarias)
+- [**Explicación de Cada Componente**](#explicación-de-cada-componente)
     - [Estructura del Proyecto](#estructura-del-proyecto)
     - [1. Hugging Face API](#1-hugging-face-api)
-      - [1.1. Ruta / (GET)](#11-ruta--get)
-      - [1.2. Ruta /status (GET)](#12-ruta-status-get)
-      - [1.3. Ruta /encode (POST)](#13-ruta-encode-post)
-      - [1.4. Ruta /metrics](#14-ruta-metrics)
     - [2. API](#2-api)
-      - [2.1. Importaciones y Configuración Básica](#21-importaciones-y-configuración-básica)
-      - [2.2. Inicialización de la Aplicación Flask y Configuración de CORS](#22-inicialización-de-la-aplicación-flask-y-configuración-de-cors)
-      - [2.3. Configuración de Variables de Entorno](#23-configuración-de-variables-de-entorno)
-      - [2.4. Conexión a Elasticsearch y Memcached](#24-conexión-a-elasticsearch-y-memcached)
-      - [2.5. Configuración y Conexión a MariaDB](#25-configuración-y-conexión-a-mariadb)
-      - [2.6. Ruta de Validación: /](#26-ruta-de-validación-)
-      - [2.7. Registro de Usuarios: /register](#27-registro-de-usuarios-register)
-      - [2.8. Login de Usuarios: /login](#28-login-de-usuarios-login)
-      - [2.9. Generación de Resultados: /ask](#29-generación-de-resultados-ask)
-      - [2.10. Publicar Prompts: /publish](#210-publicar-prompts-publish)
-      - [2.11. Buscar Prompts: /search](#211-buscar-prompts-search)
-      - [2.12. Dar Like a un Prompt: /like](#212-dar-like-a-un-prompt-like)
-      - [2.13. Obtener el Perfil de Usuario: /me/getProfile](#213-obtener-el-perfil-de-usuario-megetprofile)
-      - [2.14. Actualizar el Nombre de Usuario: /me/updateUsername](#214-actualizar-el-nombre-de-usuario-meupdateusername)
-      - [2.15. Actualizar la Contraseña: /me/updatePassword](#215-actualizar-la-contraseña-meupdatepassword)
-      - [2.16. Obtener los Prompts de un Usuario: /me/getMyPrompts](#216-obtener-los-prompts-de-un-usuario-megetmyprompts)
-      - [2.17. Actualizar un Prompt: /updatePrompt/int:prompt\_id](#217-actualizar-un-prompt-updatepromptintprompt_id)
-      - [2.18. Obtener Usuarios Aleatorios: /friends/random](#218-obtener-usuarios-aleatorios-friendsrandom)
-      - [2.19. Buscar un Usuario: /friends/search](#219-buscar-un-usuario-friendssearch)
-      - [2.20. Seguir a un Usuario: /follow](#220-seguir-a-un-usuario-follow)
-      - [2.21. Obtener Amigos de un Usuario: /friends](#221-obtener-amigos-de-un-usuario-friends)
-      - [2.22. Obtener Feed de Prompts: /feed](#222-obtener-feed-de-prompts-feed)
-      - [2.23. Eliminar un Prompt: /deletePrompts/int:prompt\_id](#223-eliminar-un-prompt-deletepromptsintprompt_id)
-      - [2.24. Iniciar la API: app.run](#224-iniciar-la-api-apprun)
-      - [2.25. Prometheus](#225-prometheus)
     - [3. UI](#3-ui)
-      - [3.1. Crear Usuarios](#31-crear-usuarios)
-      - [3.2. Ask](#32-ask)
-      - [3.3. Crear Prompt](#33-crear-prompt)
-      - [3.4. Buscar Prompts](#34-buscar-prompts)
-      - [3.5. Ver el Feed de Prompts](#35-ver-el-feed-de-prompts)
-      - [3.6. Me](#36-me)
     - [4. S3-Crawler](#4-s3-crawler)
-      - [4.1. Importación de Librerías](#41-importación-de-librerías)
-      - [4.2. Variables de Entorno](#42-variables-de-entorno)
-      - [4.3. Sesión y Cliente de S3](#43-sesión-y-cliente-de-s3)
-      - [4.4. Listar Objetos en S3](#44-listar-objetos-en-s3)
-      - [4.5. Función get\_csv()](#45-función-get_csv)
-      - [4.6. Función publish\_csv\_to\_rabbitmq()](#46-función-publish_csv_to_rabbitmq)
-      - [4.7. Inicio del Proceso](#47-inicio-del-proceso)
     - [5. Ingest](#5-ingest)
-      - [5.1. Importaciones y Requisitos](#51-importaciones-y-requisitos)
-      - [5.2. Variables de Entorno](#52-variables-de-entorno)
-      - [5.3. Conexión a Elasticsearch](#53-conexión-a-elasticsearch)
-      - [5.4. Definición del Cuerpo del Índice](#54-definición-del-cuerpo-del-índice)
-      - [5.5. Crear el Índice en Elasticsearch](#55-crear-el-índice-en-elasticsearch)
-      - [5.6. Conexión a S3](#56-conexión-a-s3)
-      - [5.7. Conexión a MariaDB](#57-conexión-a-mariadb)
-      - [5.8. Verificar si el Archivo ya fue Procesado](#58-verificar-si-el-archivo-ya-fue-procesado)
-      - [5.9. Marcar el Archivo como Procesado](#59-marcar-el-archivo-como-procesado)
-      - [5.10. Descargar un Archivo desde S3](#510-descargar-un-archivo-desde-s3)
-      - [5.11. Generar Embedding Usando la API de Hugging Face](#511-generar-embedding-usando-la-api-de-hugging-face)
-      - [5.12. Procesar un Archivo CSV](#512-procesar-un-archivo-csv)
-      - [5.13. Consumir Mensajes desde RabbitMQ](#513-consumir-mensajes-desde-rabbitmq)
-      - [5.14. Iniciar el Consumidor de RabbitMQ](#514-iniciar-el-consumidor-de-rabbitmq)
-  - [**Recomendaciones y Conclusiones**](#recomendaciones-y-conclusiones)
-    - [Recomendaciones](#recomendaciones)
-    - [Concluciones](#concluciones)
-  - [**Referencias Bibliográficas**](#referencias-bibliográficas)
-
+    - [6. Bases de datos](#6-bases-de-datos)
+- [**Recomendaciones y Conclusiones**](#recomendaciones-y-conclusiones)
+- [**Referencias Bibliográficas**](#referencias-bibliográficas)
 
 <div style="page-break-after: always;"></div>
 
@@ -227,22 +154,25 @@ Para las pruebas unitarias, se utilizó la librería de unittest que viene inclu
 En las siguientes imagenes, están los resultado de las pruebas unitarias de cada uno de los componentes. Asimismo, se utilizó la librería **moto** para simular los servicios de AWS y el módulo mock de unit test para simular objetos, servicios externos y partes de las funciones.  
 
 ### Hugging Face API
-En este módulo se probaron 3 endpoints. Los endpoints que se probaron son **/status**, **/encode** y **/**. Para el encode se hicieron dos unit tests ya que también se probó el caso en que no se tenga el campo de *text*.
-![Hugging Face Unit Test](images/hugginfaceTest1.png)
-![Hugging Face Unit Test 2](images/hugginfaceTest2.png)
+En este módulo se probaron 3 endpoints. Los endpoints que se probaron son **/status**, **/encode** y **/**. Para el encode se hicieron dos unit tests ya que también se probó el caso en que no se tenga el campo de *text*.  
+
+![Hugging Face Unit Test](images/huggingfaceTest1.png)
+![Hugging Face Unit Test 2](images/huggingfaceTest2.png)
 
 ### Ingest
 Los distintos mensajes que salen en la imagen son logs para verificar que ciertas partes de algunas funciones se esten ejecutando correctamente. Algunas funciones en este módulo cuentan con varios unit tests para verificar distintos casos, por ejemplo en el caso de que se tenga éxito y el caso de que se haya producido un error. Este es el caso funciones como *generate_embedding()*, *process_csv()* y *callback()*.  
 
-![Ingest Unit Test](images/ingestTest.png)
+![Ingest Unit Test](images/ingestTest1.png)
 
 ### S3 Crawler
-Para el S3 Crawler solamente hay dos funciones **(get_csv() y publish_csv_to_rabbitmq)** por lo tanto es una prueba para cada función. Para hacer estas pruebas se simularon los servicios de S3 y los de RabbitMQ.
-![S3 Crawler Unit Test](images/s3CrawlerTest.png)
+Para el S3 Crawler solamente hay dos funciones **(get_csv() y publish_csv_to_rabbitmq)** por lo tanto es una prueba para cada función. Para hacer estas pruebas se simularon los servicios de S3 y los de RabbitMQ.  
+
+![S3 Crawler Unit Test](images/s3CrawlerTest1.png)
 
 ### Flask API
-Para esta parte se realizaron un total de 29 pruebas. Esto se debe a que hay varias funciones donde se probaron varios casos. Por lo tanto para mantener el orden, en el archivo de unitTest.py dentro de la carpeta /flask-api/app se creo una clase por cada función. Hay funciones como **Ask()** que tienen hasta cuatro pruebas y funciones como **Like()** que tienen tres pruebas, aunque estas son excepciones ya que la mayoria de funciones tienen una o dos pruebas.
-![Flask API Unit Test](images/flaskAPITest.png)
+Para esta parte se realizaron un total de 29 pruebas. Esto se debe a que hay varias funciones donde se probaron varios casos. Por lo tanto para mantener el orden, en el archivo de unitTest.py dentro de la carpeta /flask-api/app se creo una clase por cada función. Hay funciones como **Ask()** que tienen hasta cuatro pruebas y funciones como **Like()** que tienen tres pruebas, aunque estas son excepciones ya que la mayoria de funciones tienen una o dos pruebas.  
+
+![Flask API Unit Test](images/flaskapiTest1.png)
 
 <div style="page-break-after: always;"></div>
 
@@ -371,11 +301,11 @@ Esta sección importa todas las bibliotecas necesarias para que la API funcione:
 - **boto3:** Cliente para interactuar con servicios de Amazon Web Services (AWS), aunque no se utiliza en el código actual.
 - **pymysql:** Para conectarse y trabajar con bases de datos MariaDB/MySQL.
 - **datetime:** Se utiliza para manejar fechas y horas, por ejemplo, al registrar cuándo se publica un "prompt".
-- **prometheus_client:** AA
+- **prometheus_client:** Crear el cliente de prometheus para generar métricas.
 - **base64:** Para codificar contraseñas en base64 antes de almacenarlas en la base de datos.
 - **zlib:** Para comprimir datos antes de insertarlos en cache.
-- **json:** AAA
-- **logging:** AAA
+- **json:** Biblioteca para trabajar con documentos json.
+- **logging:** Para facilitar registros y registrar info.
 
 #### 2.2. Inicialización de la Aplicación Flask y Configuración de CORS
   ```python
@@ -1694,16 +1624,142 @@ def start_rabbitmq_consumer():
 
 #### 6.1 MariaDB
 
-**DIAGRAMA
+Esquema de base de datos de MariaDB:
+![mariadb](./images/mariadb.png "mariadb")
 
-#### 6.2 ElasticSearch
+#### 6.2 Elasticsearch
 
-**DIAGRAMA
+Documentación del mapping del índice songs de Elasticsearch:
+```python
+# Definir el cuerpo del índice con el campo 'embeddings' como dense_vector
+index_body = {
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 1
+    },
+    "mappings": {
+        "properties": {
+            "id": { "type": "text" },
+            "name": { "type": "text" },
+            "album_name": { "type": "text" },
+            "artists": { "type": "text" },
+            "danceability": { "type": "float" },
+            "energy": { "type": "float" },
+            "key": { "type": "text" },
+            "loudness": { "type": "float" },
+            "mode": { "type": "text" },
+            "speechiness": { "type": "float" },
+            "acousticness": { "type": "float" },
+            "instrumentalness": { "type": "float" },
+            "liveness": { "type": "float" },
+            "valence": { "type": "float" },
+            "tempo": { "type": "float" },
+            "duration_ms": { "type": "float" },
+            "lyrics": { "type": "text", "analyzer": "standard" },
+            "embedding": {
+                "type": "dense_vector", 
+                "dims": 768, 
+                "index": True,
+                "similarity": "cosine"
+            }
+        }
+    }
+}
+
+# Crear el índice con el mapeo correcto
+if not es.indices.exists(index="songs"):
+    es.indices.create(index="songs", body=index_body)
+    logger.info("Índice 'songs' creado con éxito.")
+else:
+    logger.info("El índice 'songs' ya existe.")
+```
+
+El índice `songs` almacena información sobre canciones, incluyendo detalles como su nombre, álbum, artistas, características musicales y un vector de embeddings para realizar búsquedas por similitud.
+
+##### Configuración de Settings
+- **number_of_shards**: 1
+- **number_of_replicas**: 1
+
+##### Mapping de Campos
+
+###### 1. **id** (`text`)
+- **Descripción**: Identificador único de la canción.
+- **Uso**: Identificar de manera única cada canción.
+
+###### 2. **name** (`text`)
+- **Descripción**: El nombre de la canción.
+- **Uso**: Realizar búsquedas de canciones por su título.
+
+###### 3. **album_name** (`text`)
+- **Descripción**: El nombre del álbum al que pertenece la canción.
+- **Uso**: Buscar y filtrar canciones según el álbum.
+
+###### 4. **artists** (`text`)
+- **Descripción**: Los nombres de los artistas que interpretan la canción.
+- **Uso**: Realizar búsquedas basadas en los artistas.
+
+###### 5. **danceability** (`float`)
+- **Descripción**: Indica qué tan bailable es la canción (valor decimal).
+- **Uso**: Filtrar canciones según su bailabilidad.
+
+###### 6. **energy** (`float`)
+- **Descripción**: Nivel de energía de la canción (valor decimal).
+- **Uso**: Buscar canciones más energéticas o calmadas.
+
+###### 7. **key** (`text`)
+- **Descripción**: La tonalidad de la canción.
+- **Uso**: Análisis musicales técnicos o recomendaciones basadas en armonías.
+
+###### 8. **loudness** (`float`)
+- **Descripción**: El nivel de volumen de la canción (en decibelios).
+- **Uso**: Filtrar canciones según su intensidad de volumen.
+
+###### 9. **mode** (`text`)
+- **Descripción**: Indica si la canción está en modo mayor o menor.
+- **Uso**: Filtrar canciones según su escala musical.
+
+###### 10. **speechiness** (`float`)
+- **Descripción**: Mide la presencia de palabras habladas en la canción.
+- **Uso**: Diferenciar canciones más instrumentales de aquellas con mayor presencia de habla.
+
+###### 11. **acousticness** (`float`)
+- **Descripción**: Indica qué tan acústica es la canción.
+- **Uso**: Filtrar o recomendar canciones según su nivel de acústica.
+
+###### 12. **instrumentalness** (`float`)
+- **Descripción**: Probabilidad de que la canción sea instrumental.
+- **Uso**: Separar canciones instrumentales de aquellas con voces.
+
+###### 13. **liveness** (`float`)
+- **Descripción**: Mide la presencia de un público en la grabación.
+- **Uso**: Filtrar canciones grabadas en vivo o en estudio.
+
+###### 14. **valence** (`float`)
+- **Descripción**: Mide la positividad emocional de la canción.
+- **Uso**: Realizar análisis y recomendaciones según el estado de ánimo.
+
+###### 15. **tempo** (`float`)
+- **Descripción**: Tempo de la canción en beats por minuto (BPM).
+- **Uso**: Filtrar canciones por su velocidad rítmica.
+
+###### 16. **duration_ms** (`float`)
+- **Descripción**: Duración de la canción en milisegundos.
+- **Uso**: Filtrar canciones según su duración.
+
+###### 17. **lyrics** (`text`)
+- **Descripción**: Las letras de la canción, analizadas con el analizador estándar.
+- **Uso**: Buscar canciones según su contenido lírico.
+
+###### 18. **embedding** (`dense_vector`, 768 dimensiones)
+- **Descripción**: Representación vectorial de la canción para similitud.
+- **Uso**: Buscar similitudes entre canciones usando la métrica de coseno.
 
 Para acceder a Kibana y hacer consultas a la base de datos, vamos a **Config > Secrets** en **Lens** y buscamos el secreto llamado **ic4302-es-elastic-user**. Copiamos la contraseña, y el usuario es **elastic**.
 Esto es para luego buscar en **Network > Services** el servicio **ic4302-kb-http** y escribirlas.
 
-![kibana.png](./images/kibana.png.png "kibana.png")
+![kibana.png](./images/kibana.png "mariadb")
+
+La cantidad de documentos irá incrementando dependiendo del tiempo que lleva corriendo.
 
 <div style="page-break-after: always;"></div>
 
