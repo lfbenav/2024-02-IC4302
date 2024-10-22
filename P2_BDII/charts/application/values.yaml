@@ -1,0 +1,10 @@
+config:
+  docker_registry: wisfer
+  loader:
+    replicas: 1 
+    name: loader
+    image: loader
+  migrador:
+    replicas: 1 
+    name: migrador
+    image: migrador

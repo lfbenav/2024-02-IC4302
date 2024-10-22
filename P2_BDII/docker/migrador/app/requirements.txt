@@ -1,0 +1,5 @@
+pymongo
+elasticsearch
+sentence-transformers
+torch 
+numpy<2

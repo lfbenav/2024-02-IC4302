@@ -1,0 +1,41 @@
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "1234"
+    password: "1234"
+    database: "LyricsDB"
+    username: "user"
+  primary:
+    initdb:
+      scripts:
+        init.sql: |
+          GRANT ALL PRIVILEGES ON DATABASE LyricsDB TO user;
+          
+          CREATE TABLE Artists (
+              artist_id SERIAL PRIMARY KEY,
+              artist_name VARCHAR(255) NOT NULL,
+              genres VARCHAR(255),
+              popularity DECIMAL,
+              link VARCHAR(255)
+          );
+
+          CREATE TABLE Songs (
+              song_id SERIAL PRIMARY KEY,             -- ID único para cada canción
+              artist_id INT REFERENCES Artists(artist_id) ON DELETE CASCADE, -- Relación con la tabla Artists (puede ser NULL)
+              song_name VARCHAR(255),                 -- Nombre de la canción (puede ser NULL)
+              song_link VARCHAR(255),                 -- Enlace de la canción (puede ser NULL)
+              lyric TEXT,                             -- Letra de la canción (puede ser NULL)
+              language VARCHAR(50)                    -- Idioma de la canción (puede ser NULL)
+          );
+
+
+elastic:
+  enabled: true
+  version: 8.6.1
+  replicas: 1
+  name: ic4302
+kibana:
+  enabled: true
+  version: 8.6.1
+  replicas: 1
+  name: ic4302

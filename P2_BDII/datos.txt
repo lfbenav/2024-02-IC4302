@@ -1,0 +1,138 @@
+El json  se debe cargar como variable de entorno
+
+
+
+
+
+
+### 1. Modelo Relacional para **LyricsDB** (PostgreSQL)
+
+Este esquema relacional sigue principios de normalización para evitar redundancias y asegurar la integridad referencial:
+
+#### **Tabla: Artists**
+```sql
+CREATE TABLE Artists (
+    artist_id SERIAL PRIMARY KEY,
+    artist_name VARCHAR(255) NOT NULL,
+    genres VARCHAR(255),
+    popularity DECIMAL,
+    link VARCHAR(255)
+);
+```
+
+#### **Tabla: Songs**
+```sql
+CREATE TABLE Songs (
+    song_id SERIAL PRIMARY KEY,             -- ID único para cada canción
+    artist_id INT REFERENCES Artists(artist_id) ON DELETE CASCADE, -- Relación con la tabla Artists (puede ser NULL)
+    song_name VARCHAR(255),                 -- Nombre de la canción (puede ser NULL)
+    song_link VARCHAR(255),                 -- Enlace de la canción (puede ser NULL)
+    lyric TEXT,                             -- Letra de la canción (puede ser NULL)
+    language VARCHAR(50)                    -- Idioma de la canción (puede ser NULL)
+);
+
+```
+
+### 2. Esquema para **Lyrics Collection** en MongoDB
+
+```json
+{
+  "artist": {
+    "type": "string",
+    "required": true
+  },
+  "genres": {
+    "type": "string"
+  },
+  "popularity": {
+    "type": "int"
+  },
+  "link": {
+    "type": "string"
+  },
+  "songs": [
+    {
+      "song_name": "string",
+      "song_link": "string",
+      "lyric": "string",
+      "language": "string"
+    }
+  ]
+}
+```
+
+#### Índices en Mongo Atlas Search
+
+```json
+{
+  "mappings": {
+    "dynamic": true,
+    "fields": {
+      "artist": {
+        "type": "string"
+      },
+      "songs.song_name": {
+        "type": "string"
+      },
+      "songs.lyric": {
+        "type": "string"
+      },
+      "genres": {
+        "type": "string"
+      },
+      "songs.language": {
+        "type": "string"
+      }
+    }
+  }
+}
+```
+
+### 3. Mapping para **Elasticsearch**
+
+#### Mapping para Elasticsearch:
+```json
+{
+  "mappings": {
+    "properties": {
+      "name": {
+        "type": "text",
+        "analyzer": "standard"
+      },
+      "summary": {
+        "type": "text",
+        "analyzer": "standard"
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "standard"
+      },
+      "reviews": {
+        "type": "nested",
+        "properties": {
+          "comments": {
+            "type": "text",
+            "analyzer": "standard"
+          }
+        }
+      },
+      "name_embedding": {
+        "type": "dense_vector",
+        "dims": 512
+      },
+      "summary_embedding": {
+        "type": "dense_vector",
+        "dims": 512
+      },
+      "description_embedding": {
+        "type": "dense_vector",
+        "dims": 512
+      },
+      "reviews_embedding": {
+        "type": "dense_vector",
+        "dims": 512
+      }
+    }
+  }
+}
+```

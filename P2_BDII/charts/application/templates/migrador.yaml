@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.config.migrador.name }}-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{ .Values.config.migrador.name }}
+        image: {{ .Values.config.docker_registry }}/{{ .Values.config.migrador.image }}  # Utiliza el registro y la imagen definidos en values.yaml
+        env:
+        - name: ELASTIC_USER
+          value: "elastic"
+        - name: ELASTIC_PASS
+          valueFrom:
+            secretKeyRef:
+              name: ic4302-es-elastic-user
+              key: elastic
+              optional: false
+        - name: ELASTIC
+          value: "ic4302-es-http"
+        - name: ELASTIC_PORT
+          value: "9200"
+        - name: mongo_client
+          value: "mongodb+srv://wisfer:S4vpz219@cluster0.1rq1r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+      restartPolicy: Never
+  backoffLimit: 4
