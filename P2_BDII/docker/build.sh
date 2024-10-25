@@ -9,3 +9,7 @@ docker push $1/loader
 cd ../migrador
 docker build -t $1/migrador .
 docker push $1/migrador
+
+cd ../ui
+docker build -t $1/ui .
+docker push $1/ui

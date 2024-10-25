@@ -1,0 +1,206 @@
+/* General app styles */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600&display=swap');
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: #f0f0f5;
+  margin: 0;
+  padding: 0;
+}
+
+.contenedor-app {
+  width: 100%;
+  margin: 0;
+}
+
+/* Encabezado */
+.encabezado-app {
+  width: 100%;
+  background-color: #3A86FF;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  border-radius: 0;
+  display: flex;
+}
+
+.encabezado-app h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+
+.encabezado-app p {
+  margin: 10px 0;
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+.parte-principal{
+  flex: 1; /* Toma todo el espacio posible */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.parte-filtros{
+  flex: 0 0 auto; /* Toma solo el espacio mínimo necesario */
+}
+
+/* Barra de búsqueda centrada */
+.barra-busqueda {
+  margin: 20px auto;
+  text-align: center;
+}
+
+.barra-busqueda input {
+  padding: 10px;
+  width: 300px;
+  font-size: 1rem;
+  border: 2px solid #3A86FF;
+  border-radius: 8px;
+}
+
+.barra-busqueda button {
+  padding: 10px 20px;
+  background-color: #6C4DFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.barra-busqueda button:hover {
+  background-color: #7359C9;
+}
+
+/* Controles a la derecha */
+.contenedor-filtros {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0;
+  align-items: center;
+}
+
+.controles-busqueda, .filtros {
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.controles-busqueda select, .filtros select, .filtros input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #3A86FF;
+  background-color: white;
+  color: #3A86FF;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.filtros input[type="range"] {
+  width: 150px;
+}
+
+/* Resultados */
+.seccion-resultados {
+  margin: 20px 0;
+}
+
+.lista-resultados {
+  text-align: center;
+}
+
+.item-resultado {
+  background-color: #ffffff;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.item-resultado:hover {
+  background-color: #e0e0e0;
+}
+
+/* Detalles de la canción */
+.detalles-cancion {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detalles-cancion button {
+  padding: 10px 20px;
+  background-color: #6C4DFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 10px 10px;
+  transition: background-color 0.3s ease;
+}
+
+.detalles-cancion button:hover {
+  background-color: #7359C9;
+}
+
+/* Añadir espacio entre los botones */
+.detalles-cancion button:first-of-type {
+  margin-right: 20px;
+}
+
+.buscar-letra{
+  border-radius: 8px;
+}
+
+.seccion-busqueda{
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  justify-content: center;
+}
+
+.reseñas{
+  background-color: #ebebeb;
+  padding: 15px;
+  margin: 10px 0;
+  max-height: 720px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  overflow-y: auto;
+}
+
+.reseñas ul{
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  list-style: none;
+  text-align: left;
+  padding: 0;
+}
+
+.reseñas ul li{
+  flex: 1;
+  padding: 10px;
+  margin: 5px;
+  border-bottom: 1px solid #3A86FF;
+  border-radius: 8px;
+}
