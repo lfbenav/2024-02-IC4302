@@ -1,0 +1,8 @@
+flask
+flask-cors
+pg8000
+pymongo
+elasticsearch
+sentence-transformers
+torch
+numpy<2

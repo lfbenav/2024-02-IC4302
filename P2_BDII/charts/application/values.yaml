@@ -1,10 +1,13 @@
 config:
-  docker_registry: wisfer
-  loader:
+  docker_registry: juand0908
+  flask:
+    replicas: 2 
+    name: flask
+    image: api
+  ui:
     replicas: 1 
-    name: loader
-    image: loader
-  migrador:
-    replicas: 1 
-    name: migrador
-    image: migrador
+    name: ui
+    image: ui
+    port: 80
+    targetPort: 80
+    nodePort: 32000 

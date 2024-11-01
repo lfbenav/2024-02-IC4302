@@ -1,4 +1,5 @@
 #!/bin/bash
+
 cd bootstrap
 rm -rf Chart.lock
 helm dependency update
@@ -17,3 +18,7 @@ helm upgrade --install databases databases
 sleep 60
 
 helm upgrade --install application application
+
+sleep 60
+
+kubectl port-forward svc/flask-nodeport 5005:5005

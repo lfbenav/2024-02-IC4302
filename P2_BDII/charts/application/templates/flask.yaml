@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.config.flask.name }}
+  labels:
+    app: {{ .Values.config.flask.name }}
+spec:
+  replicas: {{ .Values.config.flask.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.config.flask.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.config.flask.name }}
+    spec:
+      containers:
+      - name: {{ .Values.config.flask.name }}
+        image: {{ .Values.config.docker_registry }}/{{ .Values.config.flask.image }}
+        ports:     
+        - containerPort: 5005
+        env:
+          - name: postgre_host
+            value: "databases-postgresql"
+          - name: postgre_user
+            value: "user"
+          - name: postgre_password
+            value: "1234"
+          - name: postgre_dbname
+            value: "LyricsDB"
+          - name: postgre_port
+            value: "5432"
+          - name: mongo_client
+            value: "mongodb+srv://AlexNaranjo:S4vpz219@cluster0.vqij1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+          - name: ELASTIC_USER
+            value: "elastic"
+          - name: ELASTIC_PASS
+            valueFrom:
+              secretKeyRef:
+                name: ic4302-es-elastic-user
+                key: elastic
+                optional: false
+          - name: ELASTIC
+            value: "ic4302-es-http"
+          - name: ELASTIC_PORT
+            value: "9200"
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.config.flask.name }}-nodeport
+  namespace: default
+  labels: 
+    app: {{ .Values.config.flask.name }}
+spec:
+  ports:
+    - name: {{ .Values.config.flask.name }}-http 
+      protocol: TCP
+      port: 5005 
+      targetPort: 5005  
+  selector:
+    app: {{ .Values.config.flask.name }}
+  type: NodePort

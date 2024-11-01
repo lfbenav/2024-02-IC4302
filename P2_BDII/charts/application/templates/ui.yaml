@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.config.ui.name }}-service-deployment
+  labels:
+    app: {{ .Values.config.ui.name }}
+spec:
+  replicas: {{ .Values.config.ui.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.config.ui.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.config.ui.name }}
+    spec:
+      containers:
+      - name: {{ .Values.config.ui.name }}
+        image: {{ .Values.config.docker_registry }}/{{ .Values.config.ui.image }}
+        ports:
+        - containerPort: {{ .Values.config.ui.targetPort }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.config.ui.name }}-service-nodeport
+  namespace: default
+spec:
+  selector:
+    app: {{ .Values.config.ui.name }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.config.ui.port }}
+      targetPort: {{ .Values.config.ui.targetPort }}
+      {{- if .Values.config.ui.nodePort }}
+      nodePort: {{ .Values.config.ui.nodePort }}  # El campo nodePort debe estar aquí, dentro del bloque de puertos
+      {{- end }}
+  type: NodePort

@@ -25,7 +25,7 @@ postgresql:
               song_name VARCHAR(255),                 -- Nombre de la canción (puede ser NULL)
               song_link VARCHAR(255),                 -- Enlace de la canción (puede ser NULL)
               lyric TEXT,                             -- Letra de la canción (puede ser NULL)
-              language VARCHAR(50)                    -- Idioma de la canción (puede ser NULL)
+              language TEXT                           -- Idioma de la canción (puede ser NULL)
           );
 
 
