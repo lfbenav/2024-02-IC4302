@@ -1021,9 +1021,41 @@ if __name__ == "__main__":
 
 ### UI
 
-La UI es una interfaz web, implementada con react, sencilla que nos permitira hacer las consultas las bases de datos de una manera visual y mas intuitiva.
+La UI es una interfaz web, implementada con react, sencilla que nos permitira hacer las consultas las bases de datos de una manera visual y mas intuitiva.  
 
-#### AA
+Inicialmente esto es lo que usuario puede observar:
+![alt text](./images/Inicial.png)
+
+#### Cabecera del sitio:
+ - Títuo, slogan y barra de búsqueda:  
+ ![alt text](./images/Título.png)  
+ Acá el usuario puede realizar la búsqueda de las canciones que desee
+
+ - Sección de filtros:  
+ ![alt text](./images/Filtros2.png)  
+ Acá el usuario puede usar los distintos filtros para refinar aún más su búsqueda según:
+   - Motor de búsqueda
+   - Lenguaje
+   - Género
+   - Popularidad
+
+#### Cuerpo del sitio
+- La sección principal se muestra vacía en un principio:  
+![alt text](./images/Cuerpo_Principal.png)   
+Una vez se realiza una búsqueda, el contenido se actualiza con las coincidencias encontradas:  
+![alt text](./images/Búsqueda.png)  
+  - Resultados: Cada sección de los resultados muestra el nombre, artista, género, popularidad y lenguaje de la canción:  
+  ![alt text](./images/Resultado.png)  
+  Si se selecciona un resultado en particular, se despliega la información completa de la canción:  
+  ![alt text](./images/Canción_Completa.png)  
+  Al final, después de las lyrics, se puede encontrar un cuadro para añadir texto y unos botones:  
+  ![alt text](./images/Botones_Canción.png)  
+    - El botón "volver a los resultados" nos permite regresar a la lista de canciones anterior:  
+    ![alt text](./images/Volver_Resultados.png)  
+    - Si rellenas el campo de texto con algún fragmento de las lyrics de la canción y presionas el botón "Buscar apartamentos basados en la letra", se deplegará una serie de resultados con los apartamentos que más se adecúen a la búsqueda:  
+    ![alt text](./images/apartamentos2.png)  
+    - Si seleccionas alguno de los apartamentos, en la parte inferior se desplegará la descripción completa del apartamento y todas las reseñas que este tenga:  
+    ![alt text](./images/Review.png)  
 
 <div style="page-break-after: always;"></div>
 
@@ -1034,8 +1066,6 @@ La UI es una interfaz web, implementada con react, sencilla que nos permitira ha
 
 ### Bases de Datos
 
-
-
 - #### **PostgreSQL**
 Diagrama Relacional de la base de datos LyricsDB.
 ![relacional](./images/relacional.png)
@@ -1044,7 +1074,24 @@ Diagrama Relacional de la base de datos LyricsDB.
 
 
 - #### **MongoDB**
-TODO
+Schema de la colección LyricsCollection
+```json
+{
+  "_id": "ObjectId",
+  "artist": "string",
+  "genres": "string",
+  "popularity": "string",
+  "link": "string",
+  "songs": [
+    {
+      "song_name": "string",
+      "song_link": "string",
+      "lyric": "string",
+      "language": "string"
+    }
+  ]
+}
+```
 <div style="page-break-after: always;"></div>
 
 
@@ -1123,9 +1170,45 @@ Para el Migrador solamente hay cuatro funciones principales **(read_documents_fr
 ## **Recomendaciones y Conclusiones**
 
 ### Recomendaciones
+1. Asegurarse de que cada componente (bases de datos, API, UI, carga de datos, y migrador) esté completamente automatizado con Kubernetes y Helm Charts, evitando configuraciones manuales al máximo.
+
+2. Implementar pruebas unitarias para cada componente, especialmente en la API y los módulos de carga de datos y migración, asegurando que se cubran casos límite.
+
+3. Realizar commits regulares en el repositorio, para mantener un historial claro de cambios y permitir colaboraciones sin conflictos.
+
+4. Verificar la calidad de los embeddings generados por el LLM para evitar incoherencias en los resultados de búsqueda y recomendaciones.
+
+5. Configurar Prometheus y Grafana para monitorear el rendimiento de la API, bases de datos y Jobs de Kubernetes, lo cual facilitará la detección temprana de problemas.
+
+6. Ajustar los índices y mappings para mejorar el rendimiento de las búsquedas full-text en Elasticsearch, principalmente en campos de alto tráfico como name, summary, y description.
+
+7. Diseñar la UI en React de manera que sea intuitiva y permita una navegación fluida entre las funciones de búsqueda y recomendaciones, implementando filtros claros y accesibles.
+
+8. Realizar pruebas de integración constantes entre la UI y la API, así como entre los componentes de carga y migración, para asegurar que se comuniquen correctamente.
+
+9. Diseñar una estrategia de recuperación en caso de fallo en las bases de datos, usando réplicas y backups para evitar pérdida de datos críticos.
+
+10. Utilizar diagramas de arquitectura, diagramas de flujo y ejemplos de código en Markdown para que la documentación sea comprensible para cualquier persona con conocimientos básicos en computación.
 
 <div style="page-break-after: always;"></div>
 
 ### Conclusiones
+1. La automatización mediante Kubernetes y Docker fue fundamental para facilitar la instalación y despliegue de los múltiples componentes del proyecto.
 
-<div style="page-break-after: always;"></div>
+2. El uso conjunto de bases de datos SQL y NoSQL permitió una estructura de datos más flexible, aunque también presentó retos en la sincronización y migración de datos.
+
+3. Los embeddings jugaron un papel crucial en la recomendación de apartamentos, mostrando el potencial de combinar procesamiento de texto con bases de datos para recomendaciones personalizadas.
+
+4. La efectividad de la interfaz de usuario dependió en gran medida de la robustez de la API, destacando la necesidad de pruebas y validación constante en los endpoints.
+
+5. Las pruebas unitarias demostraron ser esenciales para garantizar el correcto funcionamiento de cada componente, evitando errores en fases avanzadas del proyecto.
+
+6. La implementación de Kubernetes facilitó la escalabilidad del sistema, permitiendo que se adapte a un aumento en la carga de trabajo y en las consultas de los usuarios.
+
+7. La migración de datos entre MongoDB y Elasticsearch presentó desafíos técnicos, principalmente en la conversión de estructuras y generación de embeddings.
+
+8. Los procesos de carga y migración, así como el procesamiento de embeddings, requirieron un uso intensivo de recursos, especialmente en términos de procesamiento y almacenamiento.
+
+9. La documentación clara facilitó la comprensión y despliegue del sistema por otros miembros del equipo y simplificó la revisión final del proyecto.
+
+10. El uso revisiones continuas permitió iterar rápidamente sobre el desarrollo, corrigiendo problemas de integración antes de la fase final y logrando una entrega más pulida.
