@@ -11,38 +11,97 @@ function App() {
   const [cancionSeleccionada, setCancionSeleccionada] = useState(null);
   const [filtroLenguaje, setFiltroLenguaje] = useState('');
   const [filtroGenero, setFiltroGenero] = useState('');
-  const [filtroPopularidad, setFiltroPopularidad] = useState(50);
+  const [filtroPopularidad, setFiltroPopularidad] = useState(0); // Valor mínimo
+  const [filtroPopularidadMax, setFiltroPopularidadMax] = useState(100); // Valor máximo
+  const [idiomas, setIdiomas] = useState([]);
+  const [generos, setGeneros] = useState([]);
 
-  const manejarBusqueda = () => {
-    // Simulación de búsqueda en base de datos
-    setResultados([
-      { 
-        song_name: 'Canción 1',
-        artist: 'Artista 1',
-        genres: 'Pop; Rock',
-        popularity: 80,
-        language: 'es',
-        lyric: 'primer verso\nsegundo verso', 
-        score: 9.5,
-        artist_link: '/link/artista1',
-        song_link: '/link/cancion1.html'
-      },
-      { 
-        song_name: 'Canción 2',
-        artist: 'Artista 2',
-        genres: 'Hip-Hop',
-        popularity: 90,
-        language: 'en',
-        lyric: 'primer verso\nsegundo verso',
-        score: 8.9,
-        artist_link: '/link/artista2',
-        song_link: '/link/cancion2.html'
-      },
-    ]);
+  useEffect(() => {
+    obtenerDistintos();
+  }, []);
+
+  const obtenerDistintos = async () => {
+    try {
+      const response = await fetch(`${API_URL}/distinct`);
+      if (!response.ok) {
+        throw new Error('Error al obtener los idiomas y géneros');
+      }
+      const data = await response.json();
+      setIdiomas(data.distinct_languages || []);
+      setGeneros(data.distinct_genres || []);
+      console.log("Generos e Idiomas cargados...")
+    } catch (error) {
+      console.error('Error al obtener idiomas y géneros:', error);
+    }
+  };
+
+  // const obtenerDistintos = async () => {
+    
+  //     setIdiomas(["pt","en"]);
+  //     setGeneros(["rock","cock"]);
+
+  // };
+
+  const manejarBusqueda = async () => {
+    try {
+      const response = await fetch(`${API_URL}/search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: terminoBusqueda,
+          database: motor === 'PostgreSQL' ? 'postgres' : 'mongo', // Selección de la base de datos
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la búsqueda');
+      }
+
+      const data = await response.json();
+      
+      // Aplicar filtros a los resultados
+      let resultadosFiltrados = data;
+
+      // Filtrar por género
+      if (filtroGenero && filtroGenero !== 'Todos') {
+        console.log("Filtro Genero Habilitado: " + filtroGenero);
+        resultadosFiltrados = resultadosFiltrados.filter(cancion => 
+          cancion.genres.toLowerCase().includes(filtroGenero.toLowerCase())
+        );
+      }
+
+      // Filtrar por lenguaje
+      if (filtroLenguaje && filtroLenguaje !== 'Todos') {
+        console.log("Filtro Lenguaje Habilitado: " + filtroLenguaje)
+        resultadosFiltrados = resultadosFiltrados.filter(cancion => 
+          cancion.language.toLowerCase() === filtroLenguaje.toLowerCase()
+        );
+      }
+
+      // Filtrar por popularidad
+      if (filtroPopularidad && filtroPopularidadMax) {
+        console.log("Filtro Popularidad Habilitado entre " + filtroPopularidad + " y " + filtroPopularidadMax)
+        resultadosFiltrados = resultadosFiltrados.filter(cancion => 
+          cancion.popularity >= filtroPopularidad && cancion.popularity <= filtroPopularidadMax
+        );
+      }
+
+      // Mostrar los resultados
+      setResultados(resultadosFiltrados); // Guardar los resultados en el estado
+      console.log("Mostrando resultados de la búsqueda de canciones...")
+    } catch (error) {
+      console.error('Error en la búsqueda:', error);
+    }
   };
 
   const seleccionarCancion = (cancion) => {
     setCancionSeleccionada(cancion);
+  };
+
+  const resetSeleccion = () => {
+    setCancionSeleccionada(null);
   };
   
   return (
@@ -98,28 +157,39 @@ function App() {
             <label>Filtrar por Lenguaje:</label>
             <select value={filtroLenguaje} onChange={(e) => setFiltroLenguaje(e.target.value)}>
               <option value="">Todos</option>
-              <option value="Español">Español</option>
-              <option value="Inglés">Inglés</option>
-              <option value="Francés">Francés</option>
+              {idiomas.map((idioma, index) => (
+                <option key={index} value={idioma}>{idioma}</option>
+              ))}
             </select>
 
             <label>Filtrar por Género:</label>
             <select value={filtroGenero} onChange={(e) => setFiltroGenero(e.target.value)}>
               <option value="">Todos</option>
-              <option value="Pop">Pop</option>
-              <option value="Rock">Rock</option>
-              <option value="Hip-Hop">Hip-Hop</option>
+              {generos.map((genero, index) => (
+                <option key={index} value={genero}>{genero}</option>
+              ))}
             </select>
 
             <label>Filtrar por Popularidad:</label>
-            <input
-              type="range"
-              min="0"
-              max="10"
-              value={filtroPopularidad}
-              onChange={(e) => setFiltroPopularidad(e.target.value)}
-            />
-            <span>{filtroPopularidad}</span>
+            <div className="rango-popularidad">
+              <input
+                type="number"
+                min="0"
+                max="100" // Puedes ajustar este valor según tus requisitos
+                value={filtroPopularidad}
+                onChange={(e) => setFiltroPopularidad(Number(e.target.value))}
+                placeholder="Mínimo"
+              />
+              <span> a </span>
+              <input
+                type="number"
+                min="0"
+                max="100" // Puedes ajustar este valor según tus requisitos
+                value={filtroPopularidadMax}
+                onChange={(e) => setFiltroPopularidadMax(Number(e.target.value))}
+                placeholder="Máximo"
+              />
+            </div>
           </div>
         </div>
         
@@ -127,7 +197,11 @@ function App() {
 
       <main className="seccion-resultados">
         {cancionSeleccionada ? (
-          <DetallesCancion cancion={cancionSeleccionada} />
+          <DetallesCancion 
+            cancion={cancionSeleccionada} 
+            manejarBusqueda={manejarBusqueda} 
+            resetSeleccion={resetSeleccion} 
+          />
         ) : (
           <ResultadosBusqueda resultados={resultados} onSelect={seleccionarCancion} />
         )}
@@ -154,31 +228,33 @@ function ResultadosBusqueda({ resultados, onSelect }) {
   );
 }
 
-function DetallesCancion({ cancion }) {
+function DetallesCancion({ cancion, manejarBusqueda, resetSeleccion }) {
   const [apartamentos, setApartamentos] = useState([]);
   const [apartamentoSeleccionado, setApartamentoSeleccionado] = useState(null); // Estado para apartamento seleccionado
+  const [letraBusqueda, setLetraBusqueda] = useState('');
 
-  const buscarApartamentos = () => {
-    setApartamentos([
-      { 
-        name: 'Apartamento 1',
-        description: 'Descripción A',
-        reviews: ['fino lol', 'ta potente el apartamento'],
-        summary: 'resumen 1',
-      },
-      { 
-        name: 'Apartamento 2',
-        description: 'Descripción B',
-        reviews: ['gran lugar', 'cerca de todo'],
-        summary: 'resumen 2',
-      },
-      { 
-        name: 'Apartamento 3',
-        description: 'Descripción C',
-        reviews: ['guapo el dueño', 'me encantó la piscina'],
-        summary: 'resumen 3',
+  const buscarApartamentos = async () => {
+    try {
+      const response = await fetch(`${API_URL}/apartment/search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selected_text: letraBusqueda,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la búsqueda de apartamentos');
       }
-    ]);
+
+      const data = await response.json();
+      setApartamentos(data);
+      console.log("Mostrando resultados de la búsqueda de apartamentos...")
+    } catch (error) {
+      console.error('Error en la búsqueda de apartamentos:', error);
+    }
   };
 
   return (
@@ -199,11 +275,13 @@ function DetallesCancion({ cancion }) {
       </div>
       
       <div className='seccion-busqueda'>
-        <textarea 
-          rows={4} 
-          className='buscar-letra' 
-          placeholder='¡Copie y pegue aquí la sección de la letra en base a la que desea buscar!'
-        ></textarea>
+      <textarea 
+        rows={4} 
+        className='buscar-letra' 
+        placeholder='¡Copie y pegue aquí la sección de la letra en base a la que desea buscar!'
+        value={letraBusqueda}
+        onChange={(e) => setLetraBusqueda(e.target.value)}  // Actualizar el estado
+      ></textarea>
         <button onClick={buscarApartamentos}>Buscar apartamentos basados en la letra</button>
       </div>
 
@@ -241,7 +319,7 @@ function DetallesCancion({ cancion }) {
         </div>
       )}
 
-      <button onClick={() => window.location.reload()}>Volver a los resultados</button>
+      <button onClick={() => { resetSeleccion(); manejarBusqueda(); }}>Volver a los resultados</button>
     </div>
   );
 }

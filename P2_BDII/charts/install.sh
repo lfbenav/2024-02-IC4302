@@ -19,6 +19,6 @@ sleep 60
 
 helm upgrade --install application application
 
-sleep 60
+sleep 120
 
 kubectl port-forward svc/flask-nodeport 5005:5005

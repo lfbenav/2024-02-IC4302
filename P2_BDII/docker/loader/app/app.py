@@ -67,6 +67,15 @@ def parse_csv_files_in_folder(folder_path):
 # Insertar un artista en PostgreSQL
 def insert_artist_into_postgres(artist, cursor):
     try:
+        # Verificar si el artista ya existe por su nombre o enlace
+        cursor.execute("SELECT artist_id FROM Artists WHERE artist_name = %s OR link = %s", 
+                       (artist['Artist'], artist.get('Link')))
+        artist_exists = cursor.fetchone()
+
+        if artist_exists:
+            print(f"Artista ya existente en PostgreSQL: {artist['Artist']}")
+            return
+
         # Obtener y limpiar los datos de popularidad
         popularity = artist.get('Popularity')
         if popularity == 'NA' or not popularity:
@@ -90,6 +99,15 @@ def insert_artist_into_postgres(artist, cursor):
 # Insertar una canción en PostgreSQL
 def insert_song_into_postgres(song, cursor):
     try:
+        # Verificar si la canción ya existe por su enlace
+        cursor.execute("SELECT song_id FROM Songs WHERE song_link = %s",
+                       (song['SLink'],))
+        song_exists = cursor.fetchone()
+
+        if song_exists:
+            print(f"Canción ya existente en PostgreSQL: {song['SName']}")
+            return 
+
         # Verificar si hay un artista relacionado
         cursor.execute("SELECT artist_id FROM Artists WHERE link = %s", (song['ALink'],))
         artist_id = cursor.fetchone()
@@ -104,7 +122,7 @@ def insert_song_into_postgres(song, cursor):
         language = song.get('language')
 
         if not (song_name and song_link and lyric and language):
-            print(f"Saltando canción con datos faltantes: {song_name}")
+            print(f"Saltando canción con datos faltantes en PostgreSQL: {song_name}")
             return
 
         # Inserción en la tabla Songs
@@ -172,7 +190,10 @@ def insert_data(artists_data, lyrics_data):
     collection = db['LyricsCollection']
 
     for artist in artists_data:
+        print(f"\nSiguiente Artista: {artist['Artist']}")
+
         # Insertar artistas en PostgreSQL
+        print("\nINSERTANDO ARTISTA EN PostgreSQL")
         insert_artist_into_postgres(artist, cursor)
         connection.commit()
 
@@ -182,17 +203,33 @@ def insert_data(artists_data, lyrics_data):
         ]
 
         # Insertar canciones en PostgreSQL
+        print("\nINSERTANDO CANCIONES EN PostgreSQL")
         for song in related_songs:
-            insert_song_into_postgres(song, cursor)
-            connection.commit()
+            if song.get('SName') and song.get('SLink') and song.get('Lyric') and song.get('language'):
+                insert_song_into_postgres(song, cursor)
+                connection.commit()
+            else:
+                print(f"Saltando canción con datos faltantes: {song.get('SName', 'Sin nombre')}")
+
+        # Si el artista ya esta insertado en MongoDB, no se procesan las canciones ni el artista pq ya estan.
+        artist_exists = collection.find_one({"artist": artist['Artist']})
+
+        if artist_exists:
+            print("\nOMITIENDO INSERCIÓN DE CANCIONES EN MongoDB.")
+            print(f"Artista ya existente en MongoDB: {artist['Artist']}")
+            continue
 
         # Crear canciones para MongoDB
-        artist_songs_mongo = [
-            insert_song_into_mongodb(song) for song in related_songs
-            if song.get('SName') and song.get('SLink') and song.get('Lyric') and song.get('language')
-        ]
+        print("\nINSERTANDO CANCIONES EN MongoDB")
+        artist_songs_mongo = []
+        for song in related_songs:
+            if song.get('SName') and song.get('SLink') and song.get('Lyric') and song.get('language'):
+                artist_songs_mongo.append(insert_song_into_mongodb(song))
+            else:
+                print(f"Saltando canción con datos faltantes: {song.get('SName', 'Sin nombre')}")
 
         # Insertar el artista y sus canciones en MongoDB
+        print("\nINSERTANDO ARTISTA EN MongoDB")
         if artist_songs_mongo:
             insert_artist_into_mongodb(artist, artist_songs_mongo, collection)
 
@@ -214,6 +251,10 @@ def run_loader():
     lyrics_folder = os.path.join(destination_folder, 'lyrics')
     lyrics_data = parse_csv_files_in_folder(lyrics_folder)
 
+    # Imprimir la cantidad de elementos en artists_data y lyrics_data
+    print(f"Cantidad de artistas: {len(artists_data)}")
+    print(f"Cantidad de canciones: {len(lyrics_data)}")
+
     # Insertar en PostgreSQL y MongoDB
     insert_data(artists_data, lyrics_data)
 
@@ -221,6 +262,7 @@ def run_loader():
 if __name__ == "__main__":
     print("Ejecutando...")
     run_loader()
+    print("\nProceso Finalizado")
 
 
 
